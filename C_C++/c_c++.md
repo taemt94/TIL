@@ -151,3 +151,103 @@ printf("%f\n", timer);
 `gcc main.o -o exe_from_obj.exe`  
 `g++ .\main.o -o exe_from_obj.exe`  
 - object 파일만 생성하면 실행 파일은 생성이 안되므로, 컴파일러를 통해 object 파일로 실행 파일을 생성한다.
+
+
+# 02/08
+``` c
+#include <stdio.h>
+
+int main() {
+	int a, b;
+	a = 123;
+
+	int *a_ptr;
+	a_ptr = &a;
+	printf("%d %d %p\n", a, *a_ptr, a_ptr);
+
+	b = a_ptr;
+}
+```
+- 포인터의 주소값을 출력할 때는 `%p` 형식 지정자를 사용한다.
+- `b = a_ptr`의 경우 권장하는 방법은 아니지만, c의 철학에 따라 컴파일러가 에러 대신 경고를 준다고 한다.
+- 프로그래머가 (int) 형으로 형변환하려는 의도일수도 있기 때문이다.
+- 그러나 절대 권장하는 방법은 아니고, 고급 프로그래머도 이렇게 사용하는 경우는 드물다고 한다.
+
+``` c
+#include <stdio.h>
+int main(){
+	int *a, b;
+	int* a, b;
+	int *a; 
+	int *b;
+}
+```
+- 첫번째 줄의 경우 a는 int형 포인터이고, b는 int형 변수이다.
+- 두번째 줄에서 `*`을 int 바로 옆에 붙인다고 해서 b까지 포인터가 되는 건 아니고, 첫번째 줄과 동일한 의미이다.
+- 권장하는 방법은 세번째, 네번째 줄과 같이 줄바꿈을 통해 나눠 사용하는 것이다.
+
+``` c
+#include <stdio.h>
+int main(){
+	int *ptr = 1234;
+	printf("%p\n", ptr);
+	printf("%d\n", *ptr);
+
+	int *safer_ptr = NULL; // nullptr
+	int a = 1;
+	int b;
+	scanf("%d", &b);
+	
+	if (b % 2 == 0)
+		safer_ptr = &a;
+
+	if(safer_ptr != NULL)
+		printf("%p\n", safer_ptr);
+		printf("%d\n", safer_ptr);
+}
+```
+- 포인터 변수에 값을 대입하여 초기화하게 될 경우, 컴퓨터가 리디렉션을 하는 과정에서 해당 주소에 사용할 수 있는 값이 없기 때문에 런타임 에러가 발생한다.
+- 이러한 경우를 방지하기 위해 포인터를 선언함과 동시에 NULL 포인터를 관습적으로 대입한다.
+- C++ 에서는 NULL을 대신하여 nullptr가 추가되어 있다.
+- NULL 포인터를 사용함으로써 포인터 변수가 접근할 수 있는 메모리 공간이 지정되어 있지 않아 런타임 에러가 발생하는 일을 위와 같이 방지할 수 있다.
+  
+``` c
+include <stdio.h>
+
+void swap1(int a, int b){
+	printf("%p %p\n", &a, &b);
+
+	int temp = a;
+	a = b;
+	b = temp;
+}
+
+void swap2(int *a, int *b){
+	printf("%p %p\n", a, b);
+
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+int main(){
+	int a = 123;
+	int b = 456;
+	
+	printf("%p %p\n", &a, &b);
+
+	swap1(a, b);
+	printf("%d %d\n", a, b);
+
+	swap2(&a, &b);
+	printf("%d %d\n", a, b);
+
+	return 0;
+}
+```
+- 위에서 main 함수에 있는 a, b와 swap1 함수에 있는 a, b는 전혀 다른 변수이기 때문에 주소를 출력할 경우 전혀 다른 주소가 출력된다.
+- 따라서 swap1 함수로 swap을 해봤자 main 함수의 a, b의 값이 swap되지 않고 그대로 인 것을 확인할 수 있다.
+- 이를 `값에 의한 호출`이라고 한다.
+- swap 함수를 통해 main 함수의 a, b의 값을 바꾸고 싶을 때에는 포인터를 사용하여 swap2 함수와 같이 a, b의 값을 넘겨주는 것이 아니라 a와 b의 주소를 넘겨주면 된다.
+- swap2 함수의 경우 a, b의 주소가 main 함수의 a, b의 주소가 동일하다는 것을 알 수 있다.
+- 이를 `주소에 의한 호출`이라고 한다.
