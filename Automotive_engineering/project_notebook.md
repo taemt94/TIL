@@ -5,7 +5,7 @@
 - 그러기 위해서는 우선 dbc 파일을 csv 파일과 같이 우리가 읽을 수 있는 파일로 변환해주어야 한다.
 - 다행히도 우리와 같은 사람이 워낙 많기 때문에 파일을 변환해주는 프로그램이 깃허브에 이미 존재한다.
 - 이 중에서 내가 사용할 것은 파이썬 패키지로, 사용할 아래의 레포지토리에서 다운로드할 수 있다.  
-    >[Canmatrix]<https://github.com/ebroecker/canmatrix.git>  
+    > [Canmatrix](https://github.com/ebroecker/canmatrix.git)  
 - 레포지토리의 `README.md`에 설치에 대한 링크도 있으므로 참고하면 된다.
 - 패키지 설치를 완료하면 아래의 명령어를 통해 매우 간단하게 dbc 파일을 csv 파일로 변환할 수 있다.  
     >`canconvert [candatabase.dbc] [candatabase.csv]`  
