@@ -93,3 +93,31 @@
 ### 권한 설정
 - `chmod`를 사용하여 모든 하위 폴더와 하위 파일에 권한 설정을 하고 싶을 때에는 `-R` 옵션을 적용하면 된다.
     >`chmod -R [8bit permission][directory]`
+
+# 2021/03/23
+### 경로 확인
+1. `which`
+   - 특정 명령어의 위치를 찾아주는 명령어이다.
+     > ~$ `which find`  
+     > /bin/find
+   - `-a` 옵션을 주면 검색 가능한 모든 경로에서 해당 명령어를 찾는다.
+     > ~$ `which -a find`  
+     > /bin/find  
+     > /usr/bin/find
+2. `whereis`
+   - 명령어의 실행 파일 위치, 소스 위치, man 페이지 파일의 위치를 찾아주는 명령어이다.
+   - man 페이지 파일은 아직 뭔지 잘 모르겠지만, 추후에 사용하게 되면 좀 더 자세히 찾아보기로 한다.
+     > ~$ `whereis nvidia-smi`  
+     > nvidia-smi: /usr/bin/nvidia-smi /usr/share/man/man1/nvidia-smi.1.gz
+3. `locate`
+   - 다양한 패턴의 파일들을 찾을 때 유용하게 사용될 수 있는 명령어이다.
+   - 아래와 같이 디렉토리명을 입력하면 해당 디렉토리 내의 모든 디렉토리를 확인할 수 있다.
+      > ~$ `locate ~/project/test`  
+      > /home/taesankim/project/test  
+      > /home/taesankim/project/test/a.out  
+      > /home/taesankim/project/test/test  
+      > /home/taesankim/project/test/test.cpp  
+    - 또는 디렉토리 내의 특정 확장자를 가지는 모든 파일을 찾을 수도 있다.
+      > ~$ `locate ~/project/*.bin` 
+    - `-n 10` 과 같은 옵션을 주면 지정한 개수만큼 검색되도록 할 수도 있다.
+      > ~$ `locate -n 10 ~/project/*.bin` 
