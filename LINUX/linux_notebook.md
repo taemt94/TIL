@@ -121,3 +121,21 @@
       > ~$ `locate ~/project/*.bin` 
     - `-n 10` 과 같은 옵션을 주면 지정한 개수만큼 검색되도록 할 수도 있다.
       > ~$ `locate -n 10 ~/project/*.bin` 
+
+# 2021/03/24
+### 네트워크 확인 시 유용한 명령어들
+`ifconfig`
+    - "interface configuration"의 약자로 리눅스 네트워크 관리를 위한 인터페이스 구성 유틸리티이다.
+    - 현재 네트워크 구성 정보를 표시해준다.
+    - 네트워크 인터페이스에 IP 주소, 넷 마스크 또는 broadcast 주소를 설정하고, 인터페이스의 별칭을 만들거나 하드웨어 주소 설정, 인터페이스 활성화 및 비활성화 등을 할 수 있다고 한다.
+`ifconfig -a`
+    - `-a` 옵션을 주면 비활성화된 네트워크 인터페이스도 모두 볼 수 있다.
+`ifconfig [interface name] down`
+    - [interface name]에 해당하는 인터페이스를 비활성화한다.
+    - 연결을 해제하는 것으로 생각하면 될 것 같다.
+`ifconfig [interface name] up`
+    - [interface name]에 해당하는 인터페이스를 활성화한다.
+
+`sudo ethtool -p [interface(port) name]`
+    - PC에 이더넷 포트가 여러 개 있을 때 어느 것이 어느 이름을 가지고 있는지 알 수 없을 때 사용하면 좋은 방법이다.
+    - 인터페이스 이름을 입력하여 명령어를 실행하면 해당 이너넷 포트의 LED가 깜빡깜빡 거린다.
