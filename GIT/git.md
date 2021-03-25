@@ -89,3 +89,27 @@ doc/**/*.pdf
 `git commit -m "Apply .gitignore"`  
 - .gitignore 파일의 사용법은 위와 같다.
 - .gitignore 파일을 만든 후 push할 때에는 위와 같은 명령어를 입력해주면 된다.  
+
+# 2021/03/25
+### Fork한 레포에 원본 레포에서 추가된 내용 동기화하기
+- 과제를 할 때 과제 레포를 fork 했는데 원본 레포에 교수님께서 매주 과제를 추가하셔서 추가된 과제를 내가 fork한 레포에도 동기화를 시켜주어야 하였다.
+- 이럴 때는 원본 레포를 Upstream(레포 이름) 레포로 추가해주면 된다고 한다.  
+1. `git remote add upstream https://github.com/[Original Owner Username]/[Original Repository].git`  
+   - 위와 같이 입력하고서 레포를 확인하면 아래와 같이 upstream 레포가 추가된 것을 알 수 있다.  
+2. `git remote -v`   
+   
+    >    ![RESULT](./img1.png)
+3. `git fetch upstream`
+   - Upstream 레포를 만든 후, 해당 레포를 fetch하여 원본 레포에 추가된 내용을 가져온다.
+   - fetch라는 단어가 잘 와닿지 않아서 사전적 정의를 찾아보니 `(어디를 가서) 가지고[데리고/불러] 오다`라는 뜻이라는 것을 보아 해당 레포의 추가된 내용을 가지고 온다고 이해하면 될 것 같다.
+   - 여기서 upstream 레포를 fetch하게 되면, origin/master 브랜치가 아닌 upstream/master 브랜치에 원본 레포의 커밋들이 저장된다는 것을 알고 있어야 한다.
+4. `git checkout master`
+   - 그리고 나서 checkout 명령어를 통해 현재 fork한 레포에 위치해있는지 확인한다.
+   - Checkout 명령어는 내가 사용할 브랜치를 지정하는 명령어라고 한다.
+5. `git merge upstream/master`
+   - upstream/master에 추가된 내용과 내 local master 브랜치를 합친다.
+   - 이렇게 하면 내가 fork할 레포에 내가 추가한 내용은 그대로 인채 원본 레포에 추가된 내용을 가져올 수 있다.
+   - 그러나 충돌이 있을 수 있는 내용을 추가했을 경우 merge를 하게 되면 추가한 내용을 잃을 수 있으니 주의해야 한다.
+6. `git push origin master`
+   - 마지막으로 원본 레포와 merge 한 후, 깃허브 상의 레포에도 추가된 내용을 업데이트해주기 위해 push를 한다.
+   - `git clone`으로 가져온 레포의 경우 기존과 같이 `git push`만 입력하면 된다.
