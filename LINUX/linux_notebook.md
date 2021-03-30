@@ -142,3 +142,9 @@
 `sudo ethtool -p [interface(port) name]`  
   - PC에 이더넷 포트가 여러 개 있을 때 어느 것이 어느 이름을 가지고 있는지 알 수 없을 때 사용하면 좋은 방법이다.
   - 인터페이스 이름을 입력하여 명령어를 실행하면 해당 이너넷 포트의 LED가 깜빡깜빡 거린다.
+
+# 2021/03/30
+# Ubuntu 버전별 이름
+- Ubuntu 18.04는 Ubuntu Bionic, Ubuntu 20.04는 Ubuntu Focal로도 불린다.
+- ROS를 리눅스 노트북에 새로 설치하는 과정에서 Bionic과 Focal이라는 이름을 처음 알게되었다.
+- 자잘자잘한 것이라도 배운거니까 일단 적어둔다.
