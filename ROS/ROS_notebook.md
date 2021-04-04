@@ -72,6 +72,8 @@ $ export ROS_HOSTNAME=[NODE IP]
 
 # 2021/04/04
 ### ROS 패키지 생성 및 topic 송수신
+- ROS에서는 단방향 통신일 때 `topic`이라는 메세지 통신을 사용한다.
+- 이 때 송신하는 노드를 `publisher`, 수신하는 노드를 `subscriber`라고 부른다.
 #### 1. 패키지 생성
 ```
 $ cd ~/catkin_ws/src
