@@ -153,3 +153,21 @@
 ```
 $ hostname -I
 ```
+
+# 2021/04/05
+### Ubuntu 재설치
+- 차량용 컴퓨터(nuvo-6108gc)에 깔려 있는 리눅스가 16.04 버전이기도 하고, 워낙 컴퓨터를 함부로 쓰다보니 정리가 전혀 되어있지 않아 Ubuntu 18.04로 재설치하기로 하였다.
+- 아래의 링크를 참조하여 설치하였다.  
+[Ubuntu installation](https://medium.com/code-states/%EB%AC%B4%EC%9E%91%EC%A0%95-%EC%9A%B0%EB%B6%84%ED%88%AC-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0-65dae2631ecc)  
+[Ubuntu installation2](https://keepdev.tistory.com/69)  
+- 참고로, 차량용 컴퓨터는 부팅 시 F2를 눌러 바이오스에 진입하였을 때는 부팅 순서를 변경하는 옵션이 없었다.
+- 부팅 순서 변경을 할 때에는 F8(F8~F12 중 하나, 아마 F8이었던 것 같다.)을 눌러주면 순서를 변경할 수 있는 창이 나온다.
+
+### 설치 후 기본 세팅
+- build-essential 설치
+  - build-essential을 설치하면 기본적으로 make, gcc, g++ 등이 포함되어 설치된다.
+    ```
+    $ sudo apt-get update
+    $ sudo apt-get install build-essential
+    ```
+[reference](https://conservative-vector.tistory.com/entry/Ubuntu-Install)
