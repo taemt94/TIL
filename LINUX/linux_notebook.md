@@ -166,47 +166,68 @@ $ hostname -I
 ### 설치 후 기본 세팅
 - build-essential 설치
   - build-essential을 설치하면 기본적으로 make, gcc, g++ 등이 포함되어 설치된다.
+  ```
+  $ sudo apt-get update
+  $ sudo apt-get install build-essential
+  $ sudo apt-get install git
+  $ git config --global user.gmail "you@example.com"
+  ```
+  [reference](https://conservative-vector.tistory.com/entry/Ubuntu-Install)
+
+- nvidia driver 설치
+  - `ubuntu-drivers` 명령어를 통해 추천 드라이버 확인
+  ```
+  $ ubuntu-drivers devices
+  == /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
+  modalias : pci:v000010DEd00001E87sv00003842sd00002182bc03sc00i00
+  vendor   : NVIDIA Corporation
+  driver   : nvidia-driver-418-server - distro non-free
+  driver   : nvidia-driver-450 - distro non-free
+  driver   : nvidia-driver-460-server - distro non-free recommended
+  driver   : nvidia-driver-460 - distro non-free
+  driver   : nvidia-driver-450-server - distro non-free
+  driver   : xserver-xorg-video-nouveau - distro free builtin
+  ```
+  - 필요한 repository 추가
+  ```
+  $ sudo add-apt-repository ppa:graphics-drivers/ppa
+  $ sudo apt update
+  ```
+  - 설치 가능한 드라이버 목록 출력
+  ```
+  $ apt-cache search nvidia | grep nvidia-driver-460
+  ```
+  - apt로 nvidia 드라이버 설치
+  ```
+  $ sudo apt-get install nvidia-driver-460
+  ```
+  [reference](https://codechacha.com/ko/install-nvidia-driver-ubuntu/)
+
+- 그 외 다른 패키지 설치
+  ```
+  $ sudo apt-get install python-pip  ## Python 2.x pip
+  $ sudo apt-get install python3-pip ## Python 3.x pip
+
+  $ sudo apt-get install net-tools   ## ifconfig 사용
+  
+  $ sudo apt-get install can-utils   ## Linux CAN(aka SocketCAN) subsystem userspace utilities and tools
+  ```
+
+### 리눅스 모듈 관리: modprobe
+- 리눅스 개발자들은 가급적 사용자가 시스템과 관련된 내용을 잘 몰라도 사용할 수 있게끔 많은 기능을 리눅스 커널에 포함시켰는데, 그 중 하나가 커널에서 하드웨어를 발견했을 때 필요한 모듈을 자동 적재하는 기능이다.
+- 모듈 자동 적재는 모듈 유틸리티인 modprobe 프로그램을 통해 리눅스 커널이 적재 요청한 모듈이 동작할 수 있도록 이에 필요한 부수적인 모듈을 커널에 차례로 먼저 등록해준다.
+- `modprobe` 명령어는 모듈의 의존성을 고려하여(설치한 모듈을 사용하기 위해 필요한 모듈들도 함께 적재) 리눅스 커널에 모듈을 적재하는 명령어이다.
+  ```
+  $ sudo modprobe can
+  $ sudo modprobe kvaser_usb
+  ```
+- 위와 같이 입력하면 각각의 모듈을 리눅스 커널에 적재한다.
+  - 주요 옵션:
     ```
-    $ sudo apt-get update
-    $ sudo apt-get install build-essential
-    ```
-[reference](https://conservative-vector.tistory.com/entry/Ubuntu-Install)
-
-```
-$ ubuntu-drivers devices
-== /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
-modalias : pci:v000010DEd00001E87sv00003842sd00002182bc03sc00i00
-vendor   : NVIDIA Corporation
-driver   : nvidia-driver-418-server - distro non-free
-driver   : nvidia-driver-450 - distro non-free
-driver   : nvidia-driver-460-server - distro non-free recommended
-driver   : nvidia-driver-460 - distro non-free
-driver   : nvidia-driver-450-server - distro non-free
-driver   : xserver-xorg-video-nouveau - distro free builtin
-```
-- `ubuntu-drivers` 명령어를 통해 추천 드라이버 확인
-```
-$ sudo add-apt-repository ppa:graphics-drivers/ppa
-$ sudo apt update
-```
-- 필요한 repository 추가
-```
-$ apt-cache search nvidia | grep nvidia-driver-460
-```
-- 설치 가능한 드라이버 목록 출력
-
-```
-$ sudo apt-get install nvidia-driver-460
-```
-- apt로 nvidia 드라이버 설치
-
-[reference]()
-
-```
-$ sudo modprobe can
-$ sudo modprobe kvaser_usb
-$ sudo ip link set can0 type can bitrate 500000
-$ sudo ifconfig can0 up
-$ candump can0 | cantools decode [CAN.dbc directory]
-```
-[reference(dgist-artiv)](https://dgist-artiv.github.io/hwcomms/2020/08/31/socketcan-connect.html)
+    -l: 사용 가능한 모듈 정보 출력
+    -r: 의존성을 고려하여 모듈을 제거
+    -c: 모듈 관련 환경 설정 파일 내용 출력 
+- 모듈 정보 확인
+  ```
+  $ sudo modinfo [모듈명]
+  ```
