@@ -47,3 +47,28 @@
 `sudo ethtool -p [interface(port) name]`  
   - PC에 이더넷 포트가 여러 개 있을 때 어느 것이 어느 이름을 가지고 있는지 알 수 없을 때 사용하면 좋은 방법이다.
   - 인터페이스 이름을 입력하여 명령어를 실행하면 해당 이너넷 포트의 LED가 깜빡깜빡 거린다.
+
+# 2021/04/06
+### cantools를 사용한 CAN 디코딩
+- `cantools`는 파이썬에서 CAN 데이터 인코딩 및 디코딩을 할 수 있는 패키지이다.
+- 차량용 컴퓨터에 kvaser CANusb 드라이버를 설치한 후, cantools 패키지를 사용하여 차량의 CAN 데이터를 분석보려고 한다.
+- cantools 패키지 설치
+  ```
+  $ python3 -m pip install cantools
+  ```
+- 현재(2021.04.06일자) 아래의 명령어를 통해 CAN raw data가 출력되는 것을 확인하였다.
+  ```
+  $ sudo modprobe can
+  $ sudo modprobe kvaser_usb
+  $ sudo ip link set can0 type can bitrate 500000
+  $ sudo ifconfig can0 up
+  $ candump can0
+  ```
+- 추후 작업:
+  - 현재 차량용 컴퓨터에 우분투를 포맷 후 재설치하여 matplotlib 등과 같은 아주 기본적인 파이썬 패키지도 설치가 되어있지 않아 CAN 메세지를 디코딩해보지 못하였다.
+  - 기본적인 환경 구축이 되면 아래의 명령어를 통해 CAN 메세지를 디코딩해볼 예정이다.
+  ```
+  $ candump can0 | cantools decode [CAN.dbc directory]
+  ```
+  [cantools gitgub repository](https://github.com/eerimoq/cantools)  
+  [reference(dgist-artiv)](https://dgist-artiv.github.io/hwcomms/2020/08/31/socketcan-connect.html)
