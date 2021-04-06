@@ -48,7 +48,7 @@
   - PC에 이더넷 포트가 여러 개 있을 때 어느 것이 어느 이름을 가지고 있는지 알 수 없을 때 사용하면 좋은 방법이다.
   - 인터페이스 이름을 입력하여 명령어를 실행하면 해당 이너넷 포트의 LED가 깜빡깜빡 거린다.
 
-# 2021/04/06
+# 2021/04/05
 ### cantools를 사용한 CAN 디코딩
 - `cantools`는 파이썬에서 CAN 데이터 인코딩 및 디코딩을 할 수 있는 패키지이다.
 - 차량용 컴퓨터에 kvaser CANusb 드라이버를 설치한 후, cantools 패키지를 사용하여 차량의 CAN 데이터를 분석보려고 한다.
@@ -56,7 +56,7 @@
   ```
   $ python3 -m pip install cantools
   ```
-- 현재(2021.04.06일자) 아래의 명령어를 통해 CAN raw data가 출력되는 것을 확인하였다.
+- 현재(2021.04.05일자) 아래의 명령어를 통해 CAN raw data가 출력되는 것을 확인하였다.
   ```
   $ sudo modprobe can
   $ sudo modprobe kvaser_usb
@@ -72,3 +72,16 @@
   ```
   [cantools github repository](https://github.com/eerimoq/cantools)  
   [reference(dgist-artiv)](https://dgist-artiv.github.io/hwcomms/2020/08/31/socketcan-connect.html)
+
+# 2021/04/06
+### cantools로 CAN 디코딩 확인
+- 차량용 컴퓨터의 기본적인 환경 구성을 완료한 후, 터미널 상에서 cantools를 사용하여 .dbc 파일을 입력하였더니 CAN raw data로부터 디코딩을 하여 우리가 확인할 수 있는 값들을 출력해주었다.
+- 아래의 명령어는 오늘 테스트를 하면서 사용하였던 명령어이다.
+  ```
+  $ candump can0 | cantools decode [CAN.dbc directory] ## 디코딩된 CAN 데이터가 출력된다.
+  $ cantools dump [CAN.dbc directory] ## .dbc 파일을 알아보기 쉽게 요약해준다.
+  $ candump can0 | cantools decode [CAN.dbc directory] | grep -P '...CAN signal names' > result.txt ## grep 명령어로 필요한 값만 가져와 텍스트 파일로 입력하였다.
+  ```
+- 추후 작업:
+  - 파이썬에서 cantools 패키지를 사용하여 CAN 데이터를 디코딩해보려했는데, 여전히 파이썬에서는 에러가 발생한다.
+  - 파이썬 패키지가 어떻게 구성되어 있는지 살펴보고 에러를 해결해서 파이썬 상에서 CAN 데이터를 파싱할 수 있도록 코드를 작성해보려 한다.
