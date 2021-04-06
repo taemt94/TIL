@@ -83,5 +83,5 @@
   $ candump can0 | cantools decode [CAN.dbc directory] | grep -P '...CAN signal names' > result.txt ## grep 명령어로 필요한 값만 가져와 텍스트 파일로 입력하였다.
   ```
 - 추후 작업:
-  - 파이썬에서 cantools 패키지를 사용하여 CAN 데이터를 디코딩해보려했는데, 여전히 파이썬에서는 에러가 발생한다.
+  - 파이썬에서 cantools 패키지를 사용하여 CAN 데이터를 디코딩해보려 했는데, 여전히 파이썬에서는 에러가 발생한다.
   - 파이썬 패키지가 어떻게 구성되어 있는지 살펴보고 에러를 해결해서 파이썬 상에서 CAN 데이터를 파싱할 수 있도록 코드를 작성해보려 한다.
