@@ -171,3 +171,42 @@ $ hostname -I
     $ sudo apt-get install build-essential
     ```
 [reference](https://conservative-vector.tistory.com/entry/Ubuntu-Install)
+
+```
+$ ubuntu-drivers devices
+== /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
+modalias : pci:v000010DEd00001E87sv00003842sd00002182bc03sc00i00
+vendor   : NVIDIA Corporation
+driver   : nvidia-driver-418-server - distro non-free
+driver   : nvidia-driver-450 - distro non-free
+driver   : nvidia-driver-460-server - distro non-free recommended
+driver   : nvidia-driver-460 - distro non-free
+driver   : nvidia-driver-450-server - distro non-free
+driver   : xserver-xorg-video-nouveau - distro free builtin
+```
+- `ubuntu-drivers` 명령어를 통해 추천 드라이버 확인
+```
+$ sudo add-apt-repository ppa:graphics-drivers/ppa
+$ sudo apt update
+```
+- 필요한 repository 추가
+```
+$ apt-cache search nvidia | grep nvidia-driver-460
+```
+- 설치 가능한 드라이버 목록 출력
+
+```
+$ sudo apt-get install nvidia-driver-460
+```
+- apt로 nvidia 드라이버 설치
+
+[reference]()
+
+```
+$ sudo modprobe can
+$ sudo modprobe kvaser_usb
+$ sudo ip link set can0 type can bitrate 500000
+$ sudo ifconfig can0 up
+$ candump can0 | cantools decode [CAN.dbc directory]
+```
+[reference(dgist-artiv)](https://dgist-artiv.github.io/hwcomms/2020/08/31/socketcan-connect.html)
