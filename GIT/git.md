@@ -113,3 +113,8 @@ doc/**/*.pdf
 6. `git push origin master`
    - 마지막으로 원본 레포와 merge 한 후, 깃허브 상의 레포에도 추가된 내용을 업데이트해주기 위해 push를 한다.
    - `git clone`으로 가져온 레포의 경우 기존과 같이 `git push`만 입력하면 된다.
+
+# 2021/04/06
+### Git repositopy 연결 끊기
+`git remote remove origin`
+- 위의 명령어를 입력하면 로컬 저장소의 .git 파일이 삭제되어 원격 저장소와의 연결이 끊어진다.
