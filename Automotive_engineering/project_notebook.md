@@ -70,5 +70,5 @@
   ```
   $ candump can0 | cantools decode [CAN.dbc directory]
   ```
-  [cantools gitgub repository](https://github.com/eerimoq/cantools)  
+  [cantools github repository](https://github.com/eerimoq/cantools)  
   [reference(dgist-artiv)](https://dgist-artiv.github.io/hwcomms/2020/08/31/socketcan-connect.html)
