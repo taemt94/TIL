@@ -55,3 +55,8 @@
 `call tf2env/scripts/activate`  
 - 리눅스에서 가상환경을 활성화할 때는 source 명령어를 사용하면 되는 듯 하다.
 - 그러나 윈도우 상에서 가상환경을 활성화할 때에는 call 명령어를 사용해야 한다.
+
+
+# 2021/04/08
+### vars([object])
+- `__dict__` attribute를 포함하고 있는 모듈, 클래스, 객체 등의 `__dict__` attribute를 리턴해주는 함수이다. 
