@@ -3,10 +3,10 @@
 - 차량의 CAN 데이터나 카메라 및 라이다 데이터를 ROS를 통해 송/수신하기 위한 인터페이스를 구축하려한다.
 - 그러기 위해서는 일단 ROS를 사용할 줄 알아야 하기 때문에 연습 겸 우분투가 설치되어 있는 노트북에 ROS 설치부터 시작해보려고 한다.  
   
-[ROS installation](http://wiki.ros.org/ROS/Installation)
+  [ROS installation](http://wiki.ros.org/ROS/Installation)
 - ROS 설치는 위의 링크를 통해 확인할 수 있다.
 - 우분투 버전 별로 지원하는 ROS 버전이 다르므로 이것부터 확인해보아야 한다.
-- 현재 내가 사용하는 우분투는 18.04이기 때문에 ROS Melodic을 설치하였다.
+- 현재 내가 사용하는 우분투는 18.04이기 때문에 ROS Melodic을 설치하였다.  
 [ROS environment setup](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
 - 설치가 완료되면 위의 링크를 통해 ROS 환경 설정을 진행한다.
 - 설치 과정에서 중요한 내용만 간단하게 아래로 요약한다.
@@ -97,7 +97,7 @@ $ gedit package.xml
 - ROS 공식 패키지가 되면, wiki 페이지에 이 파일의 내용들이 들어가게 되므로 잘 작성하는 것이 매우 중요하다.
 - 참고로 xml은 extended mark of language의 약자로 태그 기반의 문서라고 하지만, 아직 잘 알지 못하므로 필요 시 추후에 더 공부하기로 한다.
 - 패키지를 생성하면 `package.xml` 파일에 기본적인 세팅이 되어 있으므로 필요한 것을 사용해도 무방하다.
-```
+``` xml
 <?xml version="1.0"?>
 <package format="2">
 
@@ -144,7 +144,7 @@ $ gedit CMakeLists.txt
 ```
 - `CMakeLists.txt` 파일을 열어 빌드 설정 파일을 수정한다.
 - `CMakeLists.txt`은 작성한 노드(소스코드)를 빌드하며 실행 파일을 생성할 때 어떤 식으로 하라는 내용을 담고 있는 파일이다.
-```
+``` cmake
 ## cmake 최소 빌드 버전을 작성한다.
 cmake_minimum_required(VERSION 2.8.3)
 
@@ -220,7 +220,7 @@ $ gedit topic_publisher.cpp
 ```
 - 앞서 `CMakeLists.txt` 파일에 `add_executable(topic_publisher src/topic_publisher.cpp)`라는 옵션을 넣었고 이에 관한 파일을 생성하는 내용이다.
 - src 폴더의 `topic_publisher.cpp`를 빌드하여 `topic_publisher`라는 실행 파일을 생성하게 된다.
-``` c++
+``` cpp
 #include "ros/ros.h"                         // ROS 기본 헤더파일로, ROS 관련 API가 포함된다.
 #include "ros_tutorials_topic/MsgTutorial.h" // MsgTutorial 메세지 파일 헤더(빌드 후 자동 생성됨)
 int main(int argc, char **argv) // 노드 main 함수
@@ -275,7 +275,7 @@ $ gedit topic_subscriber.cpp
 ```
 - 앞서 `CMakeLists.txt` 파일에 `add_executable(topic_subscriber src/topic_subscriber.cpp)`라는 옵션을 넣었고 이에 관한 파일을 생성하는 내용이다.
 - src 폴더의 `topic_subscriber.cpp`를 빌드하여 `topic_subscriber`라는 실행 파일을 생성하게 된다.
-``` c
+``` cpp
 #include "ros/ros.h"                         // ROS 기본 헤더파일
 #include "ros_tutorials_topic/MsgTutorial.h" // MsgTutorial 메세지 파일 헤더(빌드 후 자동 생성됨)
 
@@ -309,7 +309,7 @@ return 0;
 - 노드 및 topic 정보를 요약하면 아래와 같다.
   > 노드 명: topic_subscriber  
     topic 명: ros_tutorial_msg  
-    topic 타입:  ros_tutorials_topic::MsgTutorial
+    topic 타입: ros_tutorials_topic::MsgTutorial
 - ROS에서 통신을 할 때에는 위의 topic 명과 topic 타입을 비교하여 publisher가 subscriber에게 topic을 보낸다.
 - 따라서 위와 같이 publisher와 subscriber의 topic 명 및 topic 타입은 동일해야 한다.
 
@@ -372,3 +372,256 @@ $ rosrun ros_tutorials_topic topic_publisher
 ```
 $ rosrun ros_tutorials_topic topic_subscriber
 ```
+
+# 2021/04/11
+### service 송수신
+- 위에서 살펴본 `topic`은 단방향 메세지 통신인 반면 `service`는 양방향 메세지 통신 방법이다.
+- `service`에서는 요청(request)이 있을 때에만 응답(respond)하는 `서비스 서버(service server)`와 요청한 후 응답을 받는 `서비스 클라이언트(service client)`로 나뉜다.
+- 아래에서는 `service`를 송수신하는 패키지를 생성한 후 `service`를 직접 송수신하는 실습을 진행해보려 한다.
+
+#### 1. 패키지 생성
+```
+$ cd ~/catkin_ws/src
+$ catkin_create_pkg ros_tutorials_service message_generation std_msgs roscpp
+$ cd ros_tutorials_service
+$ ls
+include        -> 헤더 파일 폴더
+src            -> 소스 코드 폴더
+CMakeLists.txt -> 빌드 설정 파일
+package.xml    -> 패키지 설정 파일
+```
+
+#### 2. 패키지 설정 파일(package.xml) 수정
+- 패키지 설정 파일의 구성은 topic 패키지의 패키지 설정 파일 구성과 유사하므로 자세한 설명은 생략한다.
+```
+$ gedit package.xml
+```
+``` xml
+<?xml version="1.0"?>
+<package>
+<name>ros_tutorials_service</name>
+<version>0.1.0</version>
+<description>ROS tutorial package to learn the service</description>
+<license>Apache License 2.0</license>
+<author email="pyo@robotis.com">Yoonseok Pyo</author>
+<maintainer email="pyo@robotis.com">Yoonseok Pyo</maintainer>
+<url type="bugtracker">https://github.com/ROBOTIS-GIT/ros_tutorials/issues</url>
+<url type="repository">https://github.com/ROBOTIS-GIT/ros_tutorials.git</url>
+<url type="website">http://www.robotis.com</url>
+<buildtool_depend>catkin</buildtool_depend>
+<build_depend>roscpp</build_depend>
+<build_depend>std_msgs</build_depend>
+<build_depend>message_generation</build_depend>
+<run_depend>roscpp</run_depend>
+<run_depend>std_msgs</run_depend>
+<run_depend>message_runtime</run_depend>
+<export></export>
+</package>
+```
+#### 3. 빌드 설정 파일(CMakeLists.txt) 수정
+- 빌드 설정 파일의 구성 또한 topic 패키지의 빌드 설정 파일의 구성과 유사하다.
+```
+$ gedit CMakeLists.txt
+```
+``` cmake
+cmake_minimum_required(VERSION 2.8.3)
+project(ros_tutorials_service)
+
+## 캐킨 빌드를 할 때 요구되는 구성요소 패키지이다.
+## 의존성 패키지로 message_generation, std_msgs, roscpp이며 이 패키지들이 존재하지 않으면 빌드 도중에 에러가 난다.
+find_package(catkin REQUIRED COMPONENTS message_generation std_msgs roscpp)
+
+## 서비스 선언: SrvTutorial.srv
+add_service_files(FILES SrvTutorial.srv)
+
+## 의존하는 메시지를 설정하는 옵션이다.
+## std_msgs가 설치되어 있지 않다면 빌드 도중에 에러가 난다.
+generate_messages(DEPENDENCIES std_msgs)
+
+## 캐킨 패키지 옵션으로 라이브러리, 캐킨 빌드 의존성, 시스템 의존 패키지를 기술한다.
+catkin_package(
+LIBRARIES ros_tutorials_service
+CATKIN_DEPENDS std_msgs roscpp
+)
+
+## 인클루드 디렉터리를 설정한다.
+include_directories(${catkin_INCLUDE_DIRS})
+
+## service_server 노드에 대한 빌드 옵션이다.
+## 실행 파일, 타겟 링크 라이브러리, 추가 의존성 등을 설정한다.
+add_executable(service_server src/service_server.cpp)
+add_dependencies(service_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(service_server ${catkin_LIBRARIES})
+
+## service_client 노드에 대한 빌드 옵션이다.
+add_executable(service_client src/service_client.cpp)
+add_dependencies(service_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(service_client ${catkin_LIBRARIES})
+```
+
+#### 4. 서비스 파일 작성
+```
+$ roscd ros_tutorials_service -> 패키지 폴더로 이동
+$ mkdir srv
+$ cd srv
+$ gedit SrvTutorial.srv       -> SrvTutorial.srv 파일 신규 작성 및 내용 수정
+```
+- 앞서 `CMakeLists.txt` 파일에 `add_service_files(FILES SrvTutorial.srv)`라는 옵션을 넣었고 이에 관한 파일을 생성하는 내용이다.
+- 패키지 폴더 내에 `srv`라는 폴더를 생성하고 `SrvTutorial`이라는 메세지 명으로 메세지 파일을 작성한다.
+```
+int64 a
+int64 b
+---
+int64 result
+```
+- `SrvTutorial.srv`에 위와 같이 메세지 타입과 메세지 변수명으로 작성한다.
+- 여기서 `---`는 요청과 응답을 구분하는 구분자로, `---` 위쪽의 변수는 서비스 클라이언트가 서비스 서버에 서비스 요청을 할 때 전달하는 변수이고, `---` 아래쪽의 변수는 서비스 서버가 서비스 클라이언트에게 서비스를 응답할 때 전달하는 변수이다.
+
+#### 5. Service server 노드 작성
+```
+$ roscd ros_tutorials_service/src
+$ gedit service_server.cpp
+```
+- 앞서 `CMakeLists.txt` 파일에 `add_executable(service_server src/service_server.cpp)`라는 옵션을 넣었고 이에 관한 파일을 생성하는 내용이다.
+- src 폴더의 `service_server.cpp`를 빌드하여 `service_server`라는 실행 파일을 생성하게 된다.
+``` cpp
+#include "ros/ros.h"                           // ROS 기본 헤더 파일
+#include "ros_tutorials_service/SrvTutorial.h" // SrvTutorial 서비스 파일 헤더 (빌드후 자동 생성됨)
+
+// 서비스 요청이 있을 경우, 아래의 처리를 수행한다.
+// 서비스 요청은 req, 서비스 응답은 res로 설정하였다.
+bool calculation(ros_tutorials_service::SrvTutorial::Request &req,
+ros_tutorials_service::SrvTutorial::Response &res)
+{
+  // 서비스 요청시 받은 a와 b 값을 더하여 서비스 응답 값에 저장한다.
+  res.result = req.a + req.b;
+
+  // 서비스 요청에 사용된 a, b 값의 표시 및 서비스 응답에 해당되는 result 값을 출력한다.
+  ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+  ROS_INFO("sending back response: %ld", (long int)res.result);
+
+  return true;
+}
+
+int main(int argc, char **argv) // 노드 main 함수
+{
+  ros::init(argc, argv, "service_server"); // 노드명 초기화
+  ros::NodeHandle nh;                      // 노드 핸들 선언
+
+  // 서비스 서버 선언, ros_tutorials_service 패키지의 SrvTutorial 서비스 파일을 이용한
+  // 서비스 서버 ros_tutorials_service_server를 선언한다.
+  // 서비스명은 ros_tutorial_srv이며 서비스 요청이 있을 때,
+  // calculation라는 함수를 실행하라는 설정이다.
+  ros::ServiceServer ros_tutorials_service_server = nh.advertiseService("ros_tutorial_srv", calculation);
+  ROS_INFO("ready srv server!");
+
+  ros::spin(); // 서비스 요청을 대기한다.
+
+  return 0;
+}
+```
+- 노드 및 service 정보를 요약하면 아래와 같다.
+  > 노드 명: service_server  
+    service 명: ros_tutorial_srv  
+    service 타입: ros_tutorials_service::SrvTutorial
+
+#### 6. Service client 노드 작성
+```
+$ roscd ros_tutorials_service/src
+$ gedit service_client.cpp
+```
+- 앞서 `CMakeLists.txt` 파일에 `add_executable(service_client src/service_client.cpp)`라는 옵션을 넣었고 이에 관한 파일을 생성하는 내용이다.
+- src 폴더의 `service_client.cpp`를 빌드하여 `service_client`라는 실행 파일을 생성하게 된다.
+``` cpp
+#include "ros/ros.h"                           // ROS 기본 헤더 파일
+#include "ros_tutorials_service/SrvTutorial.h" // SrvTutorial 서비스 파일 헤더 (빌드후 자동 생성됨)
+#include <cstdlib>                             // atoll 함수 사용을 위한 라이브러리
+
+int main(int argc, char **argv) // 노드 main 함수
+{
+  ros::init(argc, argv, "service_client"); // 노드명 초기화
+  
+  if (argc != 3)                           // 입력값 오류 처리
+  {
+    ROS_INFO("cmd : rosrun ros_tutorials_service service_client arg0 arg1");
+    ROS_INFO("arg0: double number, arg1: double number");
+    return 1;
+  }
+
+  ros::NodeHandle nh; // ROS 시스템과 통신을 위한 노드 핸들 선언
+
+  // 서비스 클라이언트 선언, ros_tutorials_service 패키지의 SrvTutorial 서비스 파일을 이용한
+  // 서비스 클라이언트 ros_tutorials_service_client를 선언한다.
+  // 서비스명은 "ros_tutorial_srv"이다.
+  ros::ServiceClient ros_tutorials_service_client =
+  nh.serviceClient<ros_tutorials_service::SrvTutorial>("ros_tutorial_srv");
+
+  // srv라는 이름으로 SrvTutorial 서비스 파일을 이용하는 서비스를 선언한다.
+  ros_tutorials_service::SrvTutorial srv;
+
+  // 서비스 요청 값으로 노드가 실행될 때 입력으로 사용된 매개변수를 각각의 a, b에 저장한다.
+  srv.request.a = atoll(argv[1]); // atoll()은 string to int 함수이다.
+  srv.request.b = atoll(argv[2]);
+
+  // call() 멤버 함수를 통해 서비스를 요청하고, 요청이 받아들여졌을 경우, 응답 값을 표시한다.
+  if (ros_tutorials_service_client.call(srv))
+  {
+    ROS_INFO("send srv, srv.Request.a and b: %ld, %ld", (long int)srv.request.a, (long int)srv.request.b);
+    ROS_INFO("receive srv, srv.Response.result: %ld", (long int)srv.response.result);
+  }
+  else
+  {
+    ROS_ERROR("Failed to call service ros_tutorial_srv");
+    return 1;
+  }
+  return 0;
+}
+```
+- 노드 및 service 정보를 요약하면 아래와 같다.
+  > 노드 명: service_client
+    service 명: ros_tutorial_srv  
+    service 타입: ros_tutorials_service::SrvTutorial
+- ROS에서 통신을 할 때에는 위의 service 명과 service 타입을 비교하여 service server가 service client에게 service을 보낸다.
+- 따라서 위와 같이 service server와 service client의 service 명 및 service 타입은 동일해야 한다.
+
+#### 7. ROS 노드 빌드
+```
+$ cd ~/catkin_ws && catkin_make
+```
+- 패키지 작성이 완료되면, `catkin_make` 명령어를 통해 패키지의 메세지 파일, service server 노드, service client 노드를 빌드한다.
+- 빌드된 결과물은 `/catkin_ws`의 `/build`와 `/devel` 폴더에 각각 아래와 같이 생성된다.
+  - `/build` 폴더에는 catkin 빌드에서 사용된 설정 내용이 저장
+  - `/devel/lib/ros_tutorials_service` 폴더에는 실행 파일이 저장
+  - `/devel/include/ros_tutorials_service` 폴더에는 메시지 파일로부터 자동 생성된 메세지 헤더 파일이 저장
+
+#### 8. Service server 실행
+```
+$ rosrun ros_tutorials_service service server
+```
+- 노드 실행에 앞서 `roscore`를 반드시 먼저 실행한다.
+- ROS 노드 실행 명령어인 `rosrun`을 이용하여 `ros_tutorials_service` 패키지의 `service server` 노드를 구동하라는 명령이다.
+- `Service server` 노드는 서비스 요청이 있기 전까지 아무런 처리를 하지 않고 대기 상태에서 요청을 기다린다.
+#### 9. Service client 실행
+```
+$ rosrun ros_tutorials_service service_client 2 3
+[INFO] [1495726543.277216401]: send srv, srv.Request.a and b: 2, 3
+[INFO] [1495726543.277258018]: receive srv, srv.Response.result: 5
+```
+- ROS 노드 실행 명령어인 `rosrun`을 이용하여 `ros_tutorials_service` 패키지의 `service_client` 노드를 구동하라는 명령이다.
+- 노드를 실행시킬 때 요청할 때 사용할 실행 매개변수에 입력할 값(2, 3)도 함께 입력한다.
+- 2와 3은 각각 a, b 값으로 서비스를 요청하고, 이에 대한 결과로 둘의 합인 5가 result에 입력되어 응답 값으로 전송받은 것을 보여준다.
+- 실제 활용에서는 이러한 실행 매개변수 대신 명령어나 계산되어야 할 값, 트리거용 변수 등을 서비스 요청 값으로 사용할 수도 있다.
+
+```
+$ rosservice call /ros_tutorial_srv 10 2
+```
+- 서비스 요청을 할 때에는 service client 노드를 실행할 수도 있지만, `rosservice call` 명령어를 사용할 수도 있다.
+```
+$ rqt
+```
+- ROS의 GUI 도구인 rqt를 사용하는 방법도 있다.
+- rqt에서 [플러그인(Plugins)] → [서비스(Service)] →
+[Service Caller]를 선택한 후, service 칸에서 /ros_tutorial_srv를 선택하고 a, b에 값을 입력, call을 클릭하면 result에 값이 표시된다.
+---
+- 지금까지 양방향 메세지 통신 `service`를 송/수신하는 법에 대해서 살펴보았다.
+- 다음으로는 `roscore`의 역할 중 하나인 `parameter server`를 활용하는 방법과 `roslaunch`를 사용하는 방법을 정리해볼 예정이다.
