@@ -85,3 +85,59 @@
 - 추후 작업:
   - 파이썬에서 cantools 패키지를 사용하여 CAN 데이터를 디코딩해보려 했는데, 여전히 파이썬에서는 에러가 발생한다.
   - 파이썬 패키지가 어떻게 구성되어 있는지 살펴보고 에러를 해결해서 파이썬 상에서 CAN 데이터를 파싱할 수 있도록 코드를 작성해보려 한다.
+
+# 2021/04/13
+### Python으로 CAN 데이터 파싱하기
+- 파이썬의 catools 패키지와 can 패키지를 사용하여 CAN 데이터를 디코딩하고
+  디코딩된 메세지 중에서 필요한 메세지만 파싱하는 작업을 완료하였다.
+- 이에 대한 코드는 아래와 같다.
+- 주의할 점은, 아래의 코드를 실행하기 전에 터미널에서 CAN 모듈 적재 과정(2021/04/05 내용에서 확인.)을 진행해주어야 한다는 점이다. 
+  ``` python
+  import cantools
+  import can
+
+  # cantools 패키지로 dbc 파일 불러오기
+  db = cantools.database.load_file('dbc_file_directory.dbc')
+
+  # dbc 파일을 통해 읽을 수 있는 메세지에 대한 정보를 알 수 있다.
+  # 아래의 코드에서 'example1_name', 'example2_name', 'example3_name' 등의 CAN 메세지 명칭을 확인할 수 있다.
+  print(db.messages)
+
+  # can 패키지로 CAN bus 연결하기
+  # 아래의 코드를 실행하기 전에 터미널에서 CAN 모듈 적재 과정(2021/04/05 내용에서 확인.)을 진행해야 에러가 발생하지 않는다.
+  can_bus = can.interface.Bus('can0', bustype='socketcan')
+
+  # CAN 데이터를 읽고 입력하기 위한 변수를 생성한다.
+  example1 = example2 = example3 = 0.0
+  example1_frame_id = example2_frame_id = example3_frame_id = 0.0
+  for message in db.messages:
+    if message.name == 'example1_name':
+      example1_frame_id = message.frame_id
+    elif message.name == 'example2_name':
+      example2_frame_id = message.frame_id
+    elif message.name == 'example3_name':
+      example3_frame_id = message.frame_id
+
+  # CAN 메세지에서 frame_id를 통해 dbc 파일로 디코딩할 수 있는 메세지를 디코딩하여 각각의 변수에 입력 후 출력한다.
+  while(True):
+      try:
+          # can_bus를 통해 하나의 CAN 메세지를 읽어온다.
+          message = can_bus.recv()
+
+          if message.arbitration_id == example1_frame_id:
+              # 하나의 CAN 메세지에는 다양한 값들이 존재하고, 
+              # cantools는 해당 값들을 딕셔너리 형태로 디코딩하므로,
+              # 원하는 값의 키를 통해 인덱싱할 수 있다.
+              example1 = db.decode_message(message.arbitration_id, message.data)['example1_subname']
+
+          elif message.arbitration_id == example2_frame_id:
+              example2 = db.decode_message(message.arbitration_id, message.data)['example2_subname']
+          
+          elif message.arbitration_id == example3_frame_id:
+              example3 = db.decode_message(message.arbitration_id, message.data)['example3_subname']
+
+          print("example1: {:08.5f},  example2: {:08.5f},  example3: {:08.5f}".format(example1, example2, example3))
+
+      except:
+          pass
+  ```
