@@ -1,3 +1,4 @@
 ## TIL Ignore File ##
 .ipynb_checkpoints/
 .data/
+training_checkpoints/
