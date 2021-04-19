@@ -125,3 +125,116 @@ if __name__ == "__main__":
 
 - 파이썬 threading 패키지를 이용하는 방법 외에도 multiprocessing 패키지를 이용하여 process.terminate() 함수를 사용할 수도 있다고 한다.
 - 위의 코드가 제대로 실행되지 않을 경우 multiprocessing 패키지를 이용하여 구현해볼 예정이다.
+
+## 문자열 관련 함수
+- count(): 문자 개수 세기
+  ```python
+  a = "hobby"
+  a.count('b')
+  ```
+- find(), index(): 문자 인덱스 반환
+  ```python
+  ## find()
+  a = "Python is the best choice"
+  print(a.find('b')) # 찾는 문자가 처음 나온 인덱스 리턴
+  print(a.find('k')) # 존재하지 않는 문자이면 -1 리턴
+
+  ## index()
+  a = "Life is too short"
+  print(a.index('t'))
+  print(a.index('k')) # index() 함수의 경우 존재하지 않는 문자이면 에러 발생
+  ```
+- join(): 문자열 삽입
+  ``` python
+  print(",".join('abcd'))
+  print(" ".join(['a', 'b', 'c', 'd'])) # 리스트나 튜플에 대해서도 사용 가능
+  ```
+- upper(), lower(): 소문자 <-> 대문자 변환
+  ``` python
+  a = "hi"
+  print(a.upper())
+  a = "HI"
+  print(a.lower())
+  ```
+- lstrip(), rstrip(), strip(): 공백 지우기
+  ``` python
+  a = " hi "
+  print(a.lstrip()) # 왼쪽 공백 지우기
+  print(a.rstrip()) # 오른쪽 공백 지우기
+  print(a.strip())  # 양쪽 공백 지우기
+  ```
+- replace(): 문자열 바꾸기
+  ``` python
+  a = "Life is too short"
+  print(a.replace("Life", "Your leg"))
+  ```
+- split(): 문자열 나누기
+  ``` python
+  a = "Life is too short"
+  print(a.split())    # 공백을 기준으로 나누기
+  b = "a:b:c:d"
+  print(b.split(':')) # 입력한 문자를 기준으로 나누기
+  ```
+- str(): 정수나 실수를 문자열의 형태로 변환
+    ``` python
+    >>> a = [1, 2, 3]
+    >>> str(a[2])
+    '3'
+    ```
+
+## 리스트 관련 함수
+- append(): 리스트에 요소 추가
+  ``` python
+  a = [1, 2, 3]
+  a.append([5, 6])
+  ```
+- sort(*, key=None, reverse=False): 리스트 정렬
+  - key를 옵션으로 줄 경우 key를 기준으로 정렬할 수 있다.
+  - reverse=True인 경우 내림차순으로 정렬한다.
+  ``` python
+  a = [1, 4, 3, 2]
+  a.sort()
+  a = ['a', 'c', 'b']
+  a.sort() # 알파벳도 정렬 가능
+  ```
+- reverse(): 리스트 뒤집기
+  ``` python
+  a = ['a', 'c', 'b']
+  a.reverse()
+  ```
+- index(): 리스트 요소 인덱스 리턴
+  ``` python
+  a = ['a', 'c', 'b']
+  print(a.index('c'))
+  ```
+- insert(): 리스트에 요소 삽입
+  ``` python
+  a = [1, 2, 3]
+  a.insert(0, 4) # 인덱스 0 위치에 4 삽입
+  a.insert(3, 5) # 인덱스 3 위치에 5 삽입
+  ```
+- remove(): 리스트 요소 제거
+  ``` python
+  a = [1, 2, 3, 1, 2, 3]
+  a.remove(3) # 첫번째 3 제거
+  ```
+- pop(): 리스트 요소 끄집어내기
+  ``` python
+  a = [1, 2, 3]
+  print(a.pop())  # a[-1] 요소 꺼내기
+  a = [1, 2, 3]
+  print(a.pop(0)) # 특정 인덱스 요소 꺼내기
+  ```
+- count(): 리스트에 포함된 요소 x 개수 세기
+  ``` python
+  a = [1, 2, 3, 1]
+  a.count(1)
+  ```
+- extend(): 리스트 확장
+  ``` python
+  a = [1, 2, 3]
+  a.extend([4, 5])
+  
+  a = [1, 2, 3]
+  a += [4, 5]
+  ```
