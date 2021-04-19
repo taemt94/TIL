@@ -60,3 +60,68 @@
 # 2021/04/08
 ### vars([object])
 - `__dict__` attribute를 포함하고 있는 모듈, 클래스, 객체 등의 `__dict__` attribute를 리턴해주는 함수이다. 
+
+# 2021/04/19
+### Terminate threads using a flag recieved from keyboard input
+- 차량용 컴퓨터에서 CAN 및 다양한 센서들로부터의 데이터를 여러개의 쓰레드를 생성하여 하나의 프로그램에서 받을 수 있도록 하였다.
+- 이 때 데이터 수집을 중단하기 위해서 메인 쓰레드에서 키보드 입력(예: 엔터키)를 기다리다가 키보드 입력이 들어오면, 생성된 쓰레드들을 한번에 종료하기 위한 코드가 필요하였다.
+- 구글링 해본 결과 파이썬의 threading 패키지는 쓰레드를 강제 종료시키는 함수는 따로 없기 때문에 아래와 같이 flag 변수를 통해 종료시켜야 한다고 한다.
+- 아래의 코드에서 `stop_threads`가 flag 역할을 하는 변수이다.
+- 메인 쓰레드는 각각의 쓰레드를 생성하고 난 후, 키보드 입력이 들어올 때까지 대기하다가 올바른 키보드 입력이 들어오면 flag 변수를 True로 변경한다.
+- flag 변수가 True가 되면 각각의 쓰레드에서 실행되고 있는 반복문이 종료되어 쓰레드 작업도 종료된다.
+``` python
+import threading
+import time
+
+def test_CAN(id, data_name, stop):
+    print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
+    while True:
+        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        if stop():
+            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            break
+
+def test_Audio(id, data_name, stop):
+    print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
+    while True:
+        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        if stop():
+            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            break
+
+def test_Video(id, data_name, stop):
+    print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
+    while True:
+        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        if stop():
+            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            break
+
+def main():
+    stop_threads = False
+    workers = []
+    data_names = ['CAN', 'Audio', 'Video']
+    thread_function = [test_CAN, test_Audio, test_Video]
+    for id, (d_name, th_func) in enumerate(zip(data_names, thread_function)):
+        worker = threading.Thread(target=th_func, args=(id, d_name, lambda: stop_threads))
+        workers.append(worker)
+        worker.start()
+    
+    print("Press 'Enter' if you want to terminate every processes.")
+    terminate_signal = input()
+    while terminate_signal != '':
+        print("Wrong input! Press 'Enter'")
+        terminate_signal = input()
+    if terminate_signal == '':
+        stop_threads = True
+
+    for worker in workers:
+        worker.join()
+    print("Main thread finished.")
+
+if __name__ == "__main__":
+    main()
+```
+
+- 파이썬 threading 패키지를 이용하는 방법 외에도 multiprocessing 패키지를 이용하여 process.terminate() 함수를 사용할 수도 있다고 한다.
+- 위의 코드가 제대로 실행되지 않을 경우 multiprocessing 패키지를 이용하여 구현해볼 예정이다.
