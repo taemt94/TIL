@@ -76,25 +76,25 @@ import time
 def test_CAN(id, data_name, stop):
     print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
     while True:
-        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        print(f"Thread[{id}] Data_name[{data_name}]: Receiving data started.")
         if stop():
-            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            print(f"Thread[{id}] Data_name[{data_name}]: Receiving data stopped.")
             break
 
 def test_Audio(id, data_name, stop):
     print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
     while True:
-        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        print(f"Thread[{id}] Data_name[{data_name}]: Receiving data started.")
         if stop():
-            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            print(f"Thread[{id}] Data_name[{data_name}]: Receiving data stopped.")
             break
 
 def test_Video(id, data_name, stop):
     print(f"Thread[{id}] Data_name[{data_name}]: Activated.")
     while True:
-        print(f"Thread[{id}] Data_name[{data_name}]: Recieving data started.")
+        print(f"Thread[{id}] Data_name[{data_name}]: Receiving data started.")
         if stop():
-            print(f"Thread[{id}] Data_name[{data_name}]: Recieving data stopped.")
+            print(f"Thread[{id}] Data_name[{data_name}]: Receiving data stopped.")
             break
 
 def main():
