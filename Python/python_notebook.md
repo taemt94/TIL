@@ -238,3 +238,93 @@ if __name__ == "__main__":
   a = [1, 2, 3]
   a += [4, 5]
   ```
+
+# 2021/04/20
+## 딕셔너리 관련 함수들
+- keys(): Key 리스트 만들기
+  ``` python
+  a = {'name': 'pey', 'birth': '1118', 'a': [1, 2, 3], 1: 'hi'}
+  print(a.keys())
+  print(list(a.keys())) # 리턴값으로 리스트가 필요한 경우 list() 함수를 사용하면 된다.
+  ```
+- values(): Value 리스트 만들기
+  ``` python
+  a.values()
+  ```
+- items(): (Key, value) 쌍 얻기
+  ``` python
+  a.items()
+  ```
+- clear(): (Key, Value) 쌍 모두 지우기
+  ``` python
+  a.clear()
+  ```
+- get(): Key로 value 얻기
+  ``` python
+  a = {'name': 'pey', 'birth': '1118', 'a': [1, 2, 3], 1: 'hi'}
+  print(a.get('name'))
+  print(a.get('birth'))
+  print(a.get('nokey'))      # 존재하지 않는 키로 값을 가져오려고 할 때 get() 함수는 None을 리턴하지만,
+  print(a['nokey'])          # 바로 Key로 접근할 경우 에러가 발생한다.
+  print(a.get('foo', 'bar')) # 찾으려는 key 값이 없을 경우 디폴트 값을 리턴하도록 할 수도 있다.
+  ```
+- in: 해당 key가 딕셔너리 안에 있는지 조사하기
+  ``` python
+  a = {'name': 'pey', 'birth': '1118', 'a': [1, 2, 3], 1: 'hi'}
+  print('name' in a)
+  print('email' in a)
+  ```
+
+## 집합(set) 자료형 관련 함수들
+- 교집합: '&' 연산자 또는 intersection()
+  ``` python
+  s1 = set([1, 2, 3, 4, 5, 6])
+  s2 = set([4, 5, 6, 7, 8, 9])
+  print(s1 & s2)
+  print(s1.intersection(s2))
+  ```
+- 합집합: '|' 연산자 또는 union()
+  ``` python
+  print(s1 | s2)
+  print(s2.union(s1))
+  ```
+- 차집합: '-' 연산자 또는 difference()
+  ``` python
+  print(s1 - s2)
+  print(s2 - s1)
+  print(s1.difference(s2))
+  print(s2.difference(s1))
+  ```
+- add(): 값 1개 추가하기
+- update(): 값 여러 개 추가하기
+  ``` python
+  s1.add(4)
+  s1.update([4, 5, 6])
+  ```
+- remove(): 특정값 제거하기
+  ``` python
+  s1.remove(2)
+  ```
+
+---
+- id(): 변수가 가리키는 메모리의 주소를 리턴해주는 함수이다.
+  ``` python
+  a = [1, 2, 3]
+  id(a)
+  ```
+---
+### 변수 복사
+``` python
+a = [1, 2, 3]
+b = a
+```
+- 위와 같이 b를 선언하면 a와 b는 동일한 메모리를 가리키고 있게 되어 a의 값을 수정하면 b의 값도 바뀌는 셈이 된다.
+- 이를 방지하고 a와 b가 완전히 다른 주소를 가리키게 하려면 아래의 2가지 방법을 사용한다.
+  1. $[:]$ 이용
+  2. copy 모듈 이용
+``` python
+a = [1, 2, 3]
+b = a[:]    # 또는
+b = copy(a)
+```
+---
