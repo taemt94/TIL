@@ -118,3 +118,14 @@ doc/**/*.pdf
 ### Git repositopy 연결 끊기
 `git remote remove origin`
 - 위의 명령어를 입력하면 로컬 저장소의 .git 파일이 삭제되어 원격 저장소와의 연결이 끊어진다.
+
+# 2021/04/20
+### git repository 강제 pull 하기
+- 보통 작업은 내 local 컴퓨터에서 진행하고 나서 서버 컴퓨터에서는 코드만 git pull하여 사용한다.
+- 그런데 가끔 서버에서 테스트를 하는 등의 작업으로 코드가 local 컴퓨터의 코드와 약간 달라 에러가 발생하여 git pull이 안될 때가 있다.
+- 이럴 때는 아래와 같이 모든 파일들을 덮어씌우는 형태로 강제 git pull 하는 방법을 사용하면 된다.
+  ```
+  $ git fetch -all
+  $ git reset --hard origin/main
+  $ git pull origin main
+  ```
