@@ -625,3 +625,132 @@ $ rqt
 ---
 - 지금까지 양방향 메세지 통신 `service`를 송/수신하는 법에 대해서 살펴보았다.
 - 다음으로는 `roscore`의 역할 중 하나인 `parameter server`를 활용하는 방법과 `roslaunch`를 사용하는 방법을 정리해볼 예정이다.
+
+# 2021/04/21
+- 실차에 환경을 구축하면서 ROS를 사용한 서버-실차 간 통신이 원할하게 이루어지지 않아 ROS는 사용하지 않게 되었다.
+- 그러면서 ROS 공부도 지지부진해져서 정리도 늦어지게 되었지만, 더 늦으면 또 마무리를 못할 것 같아서 공부한 부분까지는 정리해놓으려고 한다.
+### Parameter
+- `roscore`의 역할 중 하나는 파라미터 서버를 관리하는 것이다.
+- 파라미터는 토픽이나 서비스를 송수신할 때 사용하는 변수 외에 사용자가 노드 외부로부터 노드의 흐름이나 설정, 처리 등을 바꿀 수 있는 매우 유용한 기능이다.
+- 위에서 작성한 ros_tutorials_service.cpp에 파라미터를 추가하여 실습해보도록 한다.
+#### 1. 파라미터를 활용한 노드 작성
+```
+$ roscd ros_tutorials_service/src
+$ gedit service_server.cpp
+```
+- 파라미터 관련 설정 `setParam` 및 읽기 `getParam` 함수에 주목하여 코드를 보면 된다.
+- 파라미터는 int, float, bool, string, dictionary, list 등 다양한 타입으로 설정할 수 있다.
+``` cpp
+#include "ros/ros.h"                           // ROS 기본 헤더파일
+#include "ros_tutorials_service/SrvTutorial.h" // SrvTutorial 서비스 파일 헤더 (빌드 후 자동 생성됨)
+#define PLUS 1           // 덧셈
+#define MINUS 2          // 빼기
+#define MULTIPLICATION 3 // 곱하기
+#define DIVISION 4       // 나누기
+
+// 기존의 서비스 서버 코드와 다른 점은 g_operator라는 변수가 추가되었다는 점이다.
+// 여기서 g_operator가 파라미터 역할을 하는 변수로 디폴트 값은 PLUS이지만, 
+// 서비스 서버 노드 실행 시 사용자가 해당 값을 변경시켜가며 노드를 실행할 수 있다.
+int g_operator = PLUS;
+
+// 서비스 요청이 있을 경우, 아래의 처리를 수행한다.
+// 서비스 요청은 req, 서비스 응답은 res로 설정하였다.
+bool calculation(ros_tutorials_service::SrvTutorial::Request &req,
+                 ros_tutorials_service::SrvTutorial::Response &res)
+{
+// 서비스 요청시 받은 a와 b 값을 파라미터 값에 따라 연산자를 달리한다.
+// 계산한 후 서비스 응답 값에 저장한다.
+  switch(g_operator)
+  {
+    case PLUS:
+      res.result = req.a + req.b; break;
+    case MINUS:
+      res.result = req.a - req.b; break;
+    case MULTIPLICATION:
+      res.result = req.a * req.b; break;
+    case DIVISION:
+      if(req.b == 0){
+        res.result = 0; break;
+      }
+      else{
+        res.result = req.a / req.b; break;
+      }
+    default:
+      res.result = req.a + req.b; break;
+  }
+
+  // 서비스 요청에 사용된 a, b값의 표시 및 서비스 응답에 해당되는 result 값을 출력한다.
+  ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+  ROS_INFO("sending back response: [%ld]", (long int)res.result);
+
+  return true;
+}
+
+int main(int argc, char **argv)            // 노드 메인 함수
+{
+  ros::init(argc, argv, "service_server"); // 노드명 초기화
+
+  ros::NodeHandle nh;                      // ROS 시스템과 통신을 위한 노드 핸들 선언
+
+  nh.setParam("calculation_method", PLUS); // 파라미터 초기설정
+
+  // 서비스 서버 선언, ros_tutorials_service 패키지의 SrvTutorial 서비스 파일을 이용한
+  // 서비스 서버 service_server를 작성한다. 서비스명은 "ros_tutorial_srv"이며,
+  // 서비스 요청이 있을 때, calculation라는 함수를 실행하라는 설정이다.
+  ros::ServiceServer ros_tutorial_service_server = nh.advertiseService("ros_tutorial_srv", calculation);
+
+  ROS_INFO("ready srv server!");
+  ros::Rate r(10); // 10 hz
+
+  while (1)
+  {
+    nh.getParam("calculation_method", g_operator); // 연산자를 매개변수로부터 받은 값으로 변경한다.
+    
+    // 기존의 서비스를 송신할 때에는 ros::spin();을 사용하여 클라이언트 서버의 요청을 대기하였지만,
+    // 파라미터를 사용할 때에는 서비스 요청 응답 후 파라미터를 다시 받으므로 spinOnce()를 사용하여 한번 요청에 응답하면
+    // 다음 코드로 넘어가도록 한다.
+    ros::spinOnce();                               // 콜백함수 처리루틴
+    r.sleep();                                     // 루틴 반복을 위한 sleep 처리
+  }
+
+  return 0;
+}
+```
+- 노드 및 service 정보를 요약하면 아래와 같다.
+  > 노드 명: service_server  
+    service 명: ros_tutorial_srv  
+    service 타입: ros_tutorials_service::SrvTutorial
+
+#### 2. 노드 빌드 및 실행
+```
+$ cd ~/catkin_ws && catkin_make
+$ rosrun ros_tutorials_service service_server
+[INFO] [1495767130.149512649]: ready srv server! # ROSINFO 출력이 보이면 노드가 제대로 실행된 것이다.
+```
+#### 3. 파라미터 목록 보기
+- `rosparam list` 명렬어를 사용하면 현재 ROS 네트워크에 사용된 파라미터의 목록을 확인할 수 있다.
+- /calculation_method가 현재 ROS 서비스 서버가 생성한 파라미터이다.
+```
+$ rosparam list
+/calculation_method
+/rosdistro
+/rosversion
+/run_id
+```
+#### 4. 파라미터 사용 예
+``` 
+$ rosservice call /ros_tutorial_srv 10 5 # 사칙연산의 변수 a, b 입력
+result: 15                               # 디폴트 사칙연산인 덧셈 결괏값
+
+$ rosparam set /calculation_method 2     # MINUS로 파라미터 변경
+$ rosservice call /ros_tutorial_srv 10 5
+result: 5
+
+$ rosparam set /calculation_method 3     # MULTIPLICATION으로 파라미터 변경
+$ rosservice call /ros_tutorial_srv 10 5
+result: 50
+
+$ rosparam set /calculation_method 4     # DEVISION으로 파라미터 변경
+$ rosservice call /ros_tutorial_srv 10 5
+result: 2
+```
