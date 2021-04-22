@@ -129,3 +129,9 @@ doc/**/*.pdf
   $ git reset --hard origin/main
   $ git pull origin main
   ```
+# 2021/04/22
+### commit message 변경하기
+- commit message를 잘못 적은 경우 아래와 같은 명령어로 message를 변경할 수 있다.
+  ```
+  $ git commit --amend [file directory] -m "Modified commit message"
+  ```
