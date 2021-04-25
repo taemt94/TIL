@@ -312,6 +312,8 @@ return 0;
     topic 타입: ros_tutorials_topic::MsgTutorial
 - ROS에서 통신을 할 때에는 위의 topic 명과 topic 타입을 비교하여 publisher가 subscriber에게 topic을 보낸다.
 - 따라서 위와 같이 publisher와 subscriber의 topic 명 및 topic 타입은 동일해야 한다.
+- 추가적으로 ROS에서는 위의 세가지 정보를 사용하여 통신을 진행하므로 이를 정확히 아는 것이 매우 중요한 것 같다.
+- 그런데 위와 같이 명확히 구분을 해놓지 않으면 나중에 이를 매칭시키는데 헷갈릴 수 있으므로 사용할 때마다 위의 세가지 정보는 어딘가에 메모해놓고서 통신하는 것이 좋을 것 같다. 
 
 #### 7. ROS 노드 빌드
 ```
@@ -738,6 +740,7 @@ $ rosparam list
 /run_id
 ```
 #### 4. 파라미터 사용 예
+- 아래에서 `resparam set` 명령어를 사용하면 파라미터의 값을 변경할 수 있다.
 ``` 
 $ rosservice call /ros_tutorial_srv 10 5 # 사칙연산의 변수 a, b 입력
 result: 15                               # 디폴트 사칙연산인 덧셈 결괏값
@@ -754,3 +757,68 @@ $ rosparam set /calculation_method 4     # DEVISION으로 파라미터 변경
 $ rosservice call /ros_tutorial_srv 10 5
 result: 2
 ```
+
+# 2021/04/25
+### roslaunch
+- `rosrun` 명령어는 하나의 노드만 실행하는 명령어이다.
+- `roslaunch` 명령어는 하나 이상의 노드를 실행시킬 수 있다.
+- 또한 `roslaunch`를 통해 패키지의 파라미터 설정, 노드의 이름 변경, 노드의 네임스페이스 설정, ROS_ROOT 및 ROS_PACKAGE_PATH 설정, 환경 변수 설정 등의 옵션을 줄 수 있다고 한다.
+- `roshlaunch`는 XML 기반의 *.launch라는 파일을 사용하여 실행할 노드를 설정한다.
+
+#### 1. roslaunch의 활용
+- 위에서 작성한 topic_publisher와 topic_subscriber 노드의 이름을 바꾸고 이를 각각 2개씩 구동하여 서로 별도의 메세지 통신을 해보고자 한다.
+- 가장 먼저 *.launch 파일을 작성하여야 한다.
+  ```
+  $ roscd ros_tutorials_topic
+  $ mkdir launch
+  $ cd launch
+  $ gedit union.launch
+  ```
+- \<node>는 `roslaunch`로 실행할 노드를 기술하는데, 아래와 같은 세가지 옵션이 있다.
+  - pkg: 패키지 명
+  - type: 실제 실행할 노드 명
+  - name: 노드 명에 해당하는 노드가 실행될 때 붙여질 이름으로 일반적으로는 type과 같게 설정하지만 필요에 따라 실행 시 이름을 변경하도록 설정할 수 있다.
+  ``` xml
+  <launch>
+  <node pkg="ros_tutorials_topic" type="topic_publisher" name="topic_publisher1"/>
+  <node pkg="ros_tutorials_topic" type="topic_subscriber" name="topic_subscriber1"/>
+  <node pkg="ros_tutorials_topic" type="topic_publisher" name="topic_publisher2"/>
+  <node pkg="ros_tutorials_topic" type="topic_subscriber" name="topic_subscriber2"/>
+  </launch>
+  ```
+- `roslaunch` 파일을 작성한 후 아래와 같이 `roslaunch`를 실행한다.
+- 참고로, `roslaunch`로 노드를 실행하면 기본적으로 노드의 `ROS_INFO` 등과 같은 출력이 터미널 상에 출력되지 않는다.
+- 이 때 `--screen` 옵션을 주면 해당 터미널에서 실행되는 모든 노드의 출력을 표시해준다.
+  ```
+  $ roslaunch ros_tutorials_topic union.launch --screen
+  ```
+- 그러나 `roslaunch`를 통해 노드들을 실행한 후 `rqt_graph`를 보면 아래와 같이 각각의 subscriber가 각각의 publisher가 보내는 topic을 모두 수신하고 있는 것을 알 수 있다.  
+![rqt_graph](./roslaunch_rqt_gragh.PNG)
+- 위와 같은 이유는 실행되는 노드의 이름만 변경해주었을 뿐 사용되는 메세지의 이름은 변경하지 않았기 때문이다.
+- 이는 `roslaunch`의 네임스페이스 태그를 사용하여 해결할 수 있다.
+#### 2. namespace 태그 추가
+- `*.launch` 파일을 아래와 같이 수정한다.
+  ```
+  $ roscd ros_tutorials_topic/launch
+  $ gedit union.launch
+  ```
+- \<group>은 네임스페이스를 지정할 수 있는 태그이다.
+  ``` xml
+  <launch>
+  <group ns="ns1"> 
+  <node pkg="ros_tutorials_topic" type="topic_publisher" name="topic_publisher"/>
+  <node pkg="ros_tutorials_topic" type="topic_subscriber" name="topic_subscriber"/>
+  </group>
+  <group ns="ns2">
+  <node pkg="ros_tutorials_topic" type="topic_publisher" name="topic_publisher"/>
+  <node pkg="ros_tutorials_topic" type="topic_subscriber" name="topic_subscriber"/>
+  </group>
+  </launch>
+  ```
+- 위와 같이 `*.launch` 파일을 수정한 후, 다시 `roslaunch`를 하면 아래와 같이 각각의 subscriber가 publisher가 보내는 topic을 따로따로 수신하는 것을 알 수 있다.  
+![namespace](./namespace_rqt_graph.PNG)
+
+#### 3. launch 태그
+- `roslaunch`에는 아래와 같이 다양한 태그가 존재한다.
+  - \<launch>, \<node>, \<machine>, \<include>, \<remap>, \<env>, \<param>, \<rosparam>, \<group>, \<test>, \<arg>
+- 태그의 종류가 다양하므로 필요할 때마다 책을 참고하여 사용하면 된다.
