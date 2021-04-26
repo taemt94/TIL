@@ -328,3 +328,10 @@ b = a[:]    # 또는
 b = copy(a)
 ```
 ---
+# 2021/04/27
+### Conditional expression(조건부 표현식)
+- 조건부 표현식은 가독성에 유리하고 한 줄로 작성할 수 있어 활용성이 좋다.
+  ``` python
+  score = 70
+  message = 'success' if score >= 60 else 'failure'
+  ```
