@@ -2,3 +2,5 @@
 .ipynb_checkpoints/
 .data/
 training_checkpoints/
+ted_hrlr_*/
+*.zip
