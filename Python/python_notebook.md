@@ -335,3 +335,13 @@ b = copy(a)
   score = 70
   message = 'success' if score >= 60 else 'failure'
   ```
+
+# 2021/04/30
+### List comprehension
+- List comprehension을 사용할 때 이중 for문에 대해서 조금 헷갈렸었는데 아래와 같이 사용하면 될 것 같다.
+``` python
+result = [x * y for x in range(2, 10)
+                    for y in range(1, 10)]
+print(result)
+```
+- 이중 for문을 작성할 때와 비슷하게 위와 같이 indentation을 주고서 연산할 값을 앞부분에 적어주면 된다.
