@@ -345,3 +345,26 @@ result = [x * y for x in range(2, 10)
 print(result)
 ```
 - 이중 for문을 작성할 때와 비슷하게 위와 같이 indentation을 주고서 연산할 값을 앞부분에 적어주면 된다.
+
+### Pass multiple arguments to a function(*args)
+- 아래와 같이 args처럼 매개변수 앞에 \*을 붙이면 입력값을 전부 모아서 튜플로 만들어준다.
+  ``` python
+  def add_mul(choice, *args):
+      if choice == "add":
+          result = 0
+          for i in args:
+              result += i
+      elif choice == "mul":
+          result = 1
+          for i in args:
+              result *= i
+      return result
+
+  result = add_mul('add', 1, 2, 3, 4, 5)
+  print(result)
+  result = add_mul('mul', 1, 2, 3, 4, 5)
+  print(result)
+
+  15
+  120
+  ```
