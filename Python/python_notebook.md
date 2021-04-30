@@ -368,3 +368,16 @@ print(result)
   15
   120
   ```
+### Keyword parameter(**kwargs)
+- **kwargs처럼 매배변수 이름 앞에 **을 붙이면 매개변수 kwargs는 딕셔너리가 되고 모든 key=value 형태의 결괏값이 그 딕셔너리에 저장된다.
+- 이러한 변수를 keyword parameter라고 부른다.
+  ``` python
+  def print_kwargs(**kwargs):
+      print(kwargs)
+
+  print_kwargs(a = 1)
+  print_kwargs(name='foo', age=3)
+  
+  {'a': 1}
+  {'name': 'foo', 'age': 3}
+  ```
