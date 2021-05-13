@@ -135,3 +135,29 @@ doc/**/*.pdf
   ```
   $ git commit --amend [file directory] -m "Modified commit message"
   ```
+
+# 2021/05/13
+### git push 취소하기
+- git push를 하고 나서 commit 메세지를 수정하고 싶거나 잘못 git push한 commit이 있을 때는 특정 commit으로 되돌릴 수 있다.
+1. git commit id 확인하기
+   ```
+   $ git log -g
+   ```
+   - 위의 명령어를 사용하거나, github에서 레포지토리 commit 내역을 통해 commit id를 복사해도 된다.
+2. commit 취소하기
+   - 최근 push했던 commit 지우기
+   - 라고 하는데, HEAD 뒤에 '^'을 붙이면 터미널 상에서 'More?' 이라는 메세지가 뜨는데 여기서 뭘 입력해야 하는지 모르겠다.
+   - 이거는 추후 더 찾아보기로 한다.
+   ```
+   $ git reset HEAD^
+   ```
+   - 특정 commit으로 돌아가고 싶을 때는 1에서 commit id를 복사해온 후 아래와 같이 입력하면 된다.
+   ```
+   $ git reset [commit id]
+   ```
+3. push 하기
+   - commit을 취소하고 나면 다른 작업을 하기 전에 반드시 git push를 한 번 해주어야 한다.
+   - 이걸 깜빡하고 다른 작업을 하다가 commit이 꼬여서 자료를 날린 적이 있으므로 꼭 주의하도록 한다.
+   ```
+   $ git push origin master -f
+   ```
