@@ -161,3 +161,33 @@ doc/**/*.pdf
    ```
    $ git push origin master -f
    ```
+# 2021/05/27
+### branch 만들기
+- branch를 사용하면 master branch와 독립적으로 코드를 개발할 수 있고 추후에 이를 다시 master branch와 merge할 수도 있어 여러 개발자들이 동시에 개발을 진행할 수 있다.
+1. branch 생성하기
+   ```
+   $ git branch <branchName>
+   $ git branch ## branch 목록 확인
+   ```
+2. branch 전환하기 및 작업 내용 push 하기
+   ```
+   $ git checkout <branchName>
+   ```
+   - 아래의 명령어와 같이 사용하면 새로운 branch를 생성함과 동시에 해당 branch로 전환된다.
+   ```
+   $ git checkout -b <branchName>
+   ```
+   - add와 commit은 기존과 동일하다.
+   - push를 할 때에는 현재 사용중인 branch 이름을 입력해준다.
+   ```
+   $ git add "..."
+   $ git commit -m "..."
+   $ git push origin <branchName>
+   ```
+3. branch 병합하기
+   - 먼저 master branch로 전환한 후에 merge를 진행한다.
+   ```
+   $ git checkout master
+   $ git merge <branchName>
+   ```
+   - 이렇게 하면 다른 branch에서 작업한 내용이 master branch에 추가된다.
