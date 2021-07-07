@@ -133,9 +133,118 @@ class ConvLSTMCell(tf.keras.layers.Layer):
 
         c_next = f * c_cur + i * g
         h_next = o * tf.tanh(c_next)
-        print(h_next.shape, c_next.shape)
+        # print(h_next.shape, c_next.shape)
         return h_next, c_next
     
     def init_hidden(self, batch_size):
         return (tf.zeros([batch_size, self.hidden_dim, self.height, self.width], dtype=tf.float32),
                 tf.zeros([batch_size, self.hidden_dim, self.height, self.width], dtype=tf.float32))
+
+## TF ConvSLTM class
+class ConvLSTM(tf.keras.layers.Layer):
+    def __init__(self, input_size, input_dim, hidden_dim, kernel_size, num_layers, batch_first=False, bias=True, return_all_layers=False):
+        super(ConvLSTM, self).__init__()
+
+        self._check_kernel_size_consistency(kernel_size)
+
+        ## Make sure that both `kernel_size` and `hidden_dim` are lists having len == num_layers
+        kernel_size = self._extend_for_multilayer(kernel_size, num_layers)
+        hidden_dim = self._extend_for_multilayer(hidden_dim, num_layers)
+        # print(f"kernel_size: {kernel_size}, hidden_dim: {hidden_dim}")
+        if not len(kernel_size) == len(hidden_dim) == num_layers:
+            raise ValueError("Inconsistent list length.")
+        
+        self.height, self.width = input_size
+
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.kernel_size = kernel_size
+        self.num_layers = num_layers
+        self.batch_first = batch_first
+        self.bias = bias
+        self.return_all_layers = return_all_layers
+
+        self.cell_list = []
+        for i in range(0, self.num_layers):
+            cur_input_dim = self.input_dim if i == 0 else self.hidden_dim[i - 1]
+
+            self.cell_list.append(ConvLSTMCell(input_size=(self.height, self.width),
+                                               input_dim=cur_input_dim,
+                                               hidden_dim=self.hidden_dim[i],
+                                               kernel_size=self.kernel_size[i],
+                                               bias=self.bias))
+
+    def call(self, input_tensor, hidden_state=None):
+        """
+
+        Parameters
+        ----------
+        input_tensor: todo
+            5-D Tensor either of shape (t, b, c, h, w) or (b, t, c, h, w)
+        hidden_state: todo
+            None. todo implement stateful
+
+        Returns
+        -------
+        last_state_list, layer_output
+        """
+        if not self.batch_first:
+            ## (timesteps, batch_size, channels, height, width) -> (batch_size, timesteps, channels, height, width)
+            input_tensor = tf.transpose(input_tensor, perm=[1, 0, 2, 3, 4])
+        
+        ## Implement stateful ConvLSTM
+        if hidden_state is not None:
+            raise NotImplementedError()
+        else:
+            hidden_state = self._init_hidden(batch_size=input_tensor.shape[0])
+        
+        layer_output_list = []
+        last_state_list = []
+
+        seq_len = input_tensor.shape[1]
+        cur_layer_input = input_tensor
+
+        for layer_idx in range(self.num_layers):
+            h, c = hidden_state[layer_idx]            
+            output_inner = []
+            # print(f"Layer {layer_idx + 1} starts.") 
+            for t in range(seq_len):
+                # print()
+                # print(f"Seqeunce {t + 1} starts.")
+                h, c = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :], cur_state=[h, c])
+                # print(f"h.shape: {h.shape} c.shape: {c.shape}")
+                output_inner.append(h)
+            
+            layer_output = tf.stack(output_inner, axis=1)
+            cur_layer_input = layer_output
+
+            layer_output = tf.transpose(layer_output, perm=[1, 0, 2, 3, 4])
+            # print(f"layer_output.shape: {layer_output.shape}")
+            # print()
+            layer_output_list.append(layer_output)
+            last_state_list.append([h, c])
+
+        if not self.return_all_layers:
+            layer_output_list = layer_output_list[-1:]
+            last_state_list = last_state_list[-1:]
+        
+        return layer_output_list, last_state_list
+    
+    def _init_hidden(self, batch_size):
+        init_states = []
+        for i in range(self.num_layers):
+            init_states.append(self.cell_list[i].init_hidden(batch_size))
+            # for j in range(2):
+            #     print(f"init_state[{i}].shape: {init_states[i][j].shape}")
+        return init_states
+
+    @staticmethod
+    def _check_kernel_size_consistency(_kernel_size):
+        if not (isinstance(_kernel_size, tuple) or (isinstance(_kernel_size, list) and all([isinstance(elem, tuple) for elem in kernel_size]))):
+            raise ValueError('`kernel_size` must be tuple or list of tuples')
+    
+    @staticmethod
+    def _extend_for_multilayer(param, _num_layers):
+        if not isinstance(param, list):
+            param = [param] * _num_layers
+        return param
