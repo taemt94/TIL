@@ -6,3 +6,5 @@ ted_hrlr_*/
 *.zip
 test*.txt
 doit/
+trainset/
+testset/
