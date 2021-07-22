@@ -10,3 +10,4 @@ trainset/
 testset/
 model0.*
 __pycache__/
+checkpoint
