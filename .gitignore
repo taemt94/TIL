@@ -9,3 +9,4 @@ doit/
 trainset/
 testset/
 model0.*
+__pycache__/
