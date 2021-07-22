@@ -8,3 +8,4 @@ test*.txt
 doit/
 trainset/
 testset/
+model0.*
