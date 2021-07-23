@@ -18,6 +18,7 @@ class double_conv(tf.keras.layers.Layer):
     def call(self, x):
         # print(x.shape)
         x = self.conv(x)
+
         # print(x.shape)
         return x
 
@@ -66,9 +67,10 @@ class up(tf.keras.layers.Layer):
                     [diffY // 2, int(diffY / 2)],
                     [0, 0]]
         x_enc = tf.pad(x_enc, paddings=paddings)
-        x = tf.concat([x_enc, x_dec], axis=-1)
         # print(x_enc.shape, x_dec.shape)
-        # print(x.shape)
+         
+        x = tf.concat([x_enc, x_dec], axis=-1)
+        # print(x.shape)       
         x = self.conv(x)
         # print(x.shape)
         return x
@@ -84,6 +86,7 @@ class outconv(tf.keras.layers.Layer):
         return x
 
 ## TF ConvLSTMCell
+### TF code
 class ConvLSTMCell(tf.keras.layers.Layer):
     def __init__(self, input_size, input_dim, hidden_dim, kernel_size, bias):
         """
@@ -113,16 +116,18 @@ class ConvLSTMCell(tf.keras.layers.Layer):
         self.padding = kernel_size[0] // 2, kernel_size[1] // 2
         self.bias = bias
 
-        self.conv = Conv2D(filters=4*self.hidden_dim, kernel_size=self.kernel_size, padding=self.padding, use_bias=self.bias)
+        ### 여기서 패딩은 어떻게 처리하였는지?
+        self.conv = Conv2D(filters=4*self.hidden_dim, kernel_size=self.kernel_size, padding="same", use_bias=self.bias, data_format="channels_first")
 
     def call(self, input_tensor, cur_state):
         h_cur, c_cur = cur_state
-
-        combined = tf.concat([input_tensor, h_cur], axis=-1)
-
+        # print(f"input_tensor.shape: {input_tensor.shape} h_cur.shape: {h_cur.shape}")
+        combined = tf.concat([input_tensor, h_cur], axis=1) ## concatenate along channel axis
+        # print(f"combined.shape: {combined.shape}")
         combined_conv = self.conv(combined)
-
-        cc_i, cc_f, cc_o, cc_g = tf.split(value=combined_conv, num_or_size_splits=self.hidden_dim, axis=1)
+        # print(f"combined_conv.shape: {combined_conv.shape} hidden_dim: {self.hidden_dim}")
+        cc_i, cc_f, cc_o, cc_g = tf.split(value=combined_conv, num_or_size_splits=int(combined_conv.shape[1] // self.hidden_dim), axis=1)
+        # print(f"cc_i.shape: {cc_i.shape}")
         i = tf.sigmoid(cc_i)
         f = tf.sigmoid(cc_f)
         o = tf.sigmoid(cc_o)
@@ -237,7 +242,7 @@ class ConvLSTM(tf.keras.layers.Layer):
 
     @staticmethod
     def _check_kernel_size_consistency(_kernel_size):
-        if not (isinstance(_kernel_size, tuple) or (isinstance(_kernel_size, list) and all([isinstance(elem, tuple) for elem in kernel_size]))):
+        if not (isinstance(_kernel_size, tuple) or (isinstance(_kernel_size, list) and all([isinstance(elem, tuple) for elem in _kernel_size]))):
             raise ValueError('`kernel_size` must be tuple or list of tuples')
     
     @staticmethod
