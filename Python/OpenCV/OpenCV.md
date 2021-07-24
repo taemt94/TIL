@@ -57,3 +57,49 @@ while True:
         pass
 
 ```
+
+# 2021/07/24
+### 영상 저장하기
+``` python
+import cv2
+
+cap = cv2.VideoCapture("{Video_directory}")
+
+## openCV version check ##
+(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+if int(major_ver)  < 3 :
+    fps = cap.get(cv2.cv.CV_CAP_PROP_FPS)
+    print ("Frames per second using video.get(cv2.cv.CV_CAP_PROP_FPS): {0}".format(fps))
+else:
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    print ("Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps))
+
+### Default resolutions of the frame are obtained. ###
+frame_width = int(caps.get(3))
+frame_height = int(caps.get(4))
+
+### fourcc는 영상의 코덱을 설정하는 것으로 'MJPG' 형식으로 하는 것이 가장 일반적이고 안정적이라고 한다.
+fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+video_out = cv2.VideoWriter('./{video_name}.avi', fourcc, fps, (frame_width, frame_height))
+
+while True:
+    try:
+        success, img = cap.read()
+
+        ### 경험상 imshow()를 하기 전에 write()를 할 때 에러가 발생하지 않았던 것 같다.
+        video_out.write(img)
+        
+        cv2.imshow("Video", img)
+
+        key = cv2.waitKey(int(1000/fps))
+        if key & 0xFF == ord("q"):
+            cv2.destroyAllwindows()
+            break
+    except:
+        pass
+
+cap.release()
+### 영상 저장 객체도 release() 하는 것을 잊지 말아야 한다.
+### 이걸 깜빡했다가 하루종일 헤맷던 적이 있다.
+video_out.release()
+```
