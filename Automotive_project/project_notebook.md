@@ -145,5 +145,7 @@
 # 2021/07/27
 ### 레이더 관련 패키지 링크
 - ROS 패키지: <https://github.com/radar-lab/ti_mmwave_rospkg>
-- 파이썬 mmWave 패키지 examples: <https://github.com/bigheadG/mmWave>
-- 파이썬 mmWave 툴박스: <https://github.com/m6c7l/pymmw>
+- 파이썬 examples: 
+  1. <https://github.com/bigheadG/mmWave>
+  2. <https://github.com/m6c7l/pymmw>
+  3. <https://github.com/ibaiGorordo/AWR1642-Read-Data-Python-MMWAVE-SDK-2>
