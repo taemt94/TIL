@@ -15,7 +15,7 @@ class double_conv(tf.keras.layers.Layer):
             ReLU()
         ])
 
-    def call(self, x):
+    def __call__(self, x):
         # print(x.shape)
         x = self.conv(x)
 
@@ -27,7 +27,7 @@ class inconv(tf.keras.layers.Layer):
         super(inconv, self).__init__()
         self.conv = double_conv(in_ch, out_ch)
 
-    def call(self, x):
+    def __call__(self, x):
         x = self.conv(x)
         return x
 
@@ -39,7 +39,7 @@ class down(tf.keras.layers.Layer):
             double_conv(in_ch, out_ch)
         ])
 
-    def call(self, x):
+    def __call__(self, x):
         # print(x.shape)
         x = self.mpconv(x)
         # print(x.shape)
@@ -50,14 +50,14 @@ class up(tf.keras.layers.Layer):
     def __init__(self, in_ch, out_ch, bilinear=True):
         super(up, self).__init__()
 
-        if bilinear:
-            self.up = UpSampling2D(size=(2, 2))
-        else:
-            self.up = Conv2DTranspose(filters=in_ch // 2, kernel_size=2, strides=2)
+        # if bilinear:
+        self.up = UpSampling2D(size=(2, 2))
+        # else:
+        #     self.up = Conv2DTranspose(filters=in_ch // 2, kernel_size=2, strides=2)
 
         self.conv = double_conv(in_ch, out_ch)
 
-    def call(self, x_dec, x_enc):
+    def __call__(self, x_dec, x_enc):
         x_dec = self.up(x_dec)
         # print(x_dec.shape)
         diffX = x_dec.shape[1] - x_enc.shape[1]
@@ -79,7 +79,7 @@ class outconv(tf.keras.layers.Layer):
         super(outconv, self).__init__()
         self.conv = Conv2D(filters=out_ch, kernel_size=1)
 
-    def call(self, x):
+    def __call__(self, x):
         # print("Shape before conv:", x.shape)
         x = self.conv(x)
         # print("Shape after  conv:", x.shape)
@@ -119,7 +119,7 @@ class ConvLSTMCell(tf.keras.layers.Layer):
         ### 여기서 패딩은 어떻게 처리하였는지?
         self.conv = Conv2D(filters=4*self.hidden_dim, kernel_size=self.kernel_size, padding="same", use_bias=self.bias, data_format="channels_first")
 
-    def call(self, input_tensor, cur_state):
+    def __call__(self, input_tensor, cur_state):
         h_cur, c_cur = cur_state
         # print(f"input_tensor.shape: {input_tensor.shape} h_cur.shape: {h_cur.shape}")
         combined = tf.concat([input_tensor, h_cur], axis=1) ## concatenate along channel axis
@@ -176,7 +176,7 @@ class ConvLSTM(tf.keras.layers.Layer):
                                                kernel_size=self.kernel_size[i],
                                                bias=self.bias))
 
-    def call(self, input_tensor, hidden_state=None):
+    def __call__(self, input_tensor, hidden_state=None):
         """
 
         Parameters

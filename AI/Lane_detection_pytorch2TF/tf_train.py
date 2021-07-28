@@ -31,14 +31,15 @@ def train(args, epoch, model, train_loader, optimizer, criterion):
             # output = tf.keras.layers.Softmax(axis=-1)(output)
             # print(target.shape, output.shape)
             
-            loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output)
+            # loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output)
             # loss = criterion(target, output)
             weights = tf.cast(target, dtype=tf.float32) + 0.02
-            loss = tf.math.multiply(loss, weights)
+            # loss = tf.math.multiply(loss, weights)
+            loss = criterion(target, output, sample_weight=weights)
             
             # print(loss)
             # loss = tf.clip_by_value(loss, clip_value_min=0, clip_value_max=float("inf"))
-            loss = tf.reduce_mean(loss)
+            # loss = tf.reduce_mean(loss)
             # print(loss)
             
         gradients = tape.gradient(loss, model.trainable_weights)
@@ -70,14 +71,14 @@ def val(args, model, val_loader, criterion):
         # output = tf.keras.layers.Softmax(axis=-1)(output)
         # print(target.shape, output.shape)
         
-        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output)
+        # loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output)
         # loss = criterion(target, output)
         weights = tf.cast(target, dtype=tf.float32) + 0.02
-        loss = tf.math.multiply(loss, weights)
-        
+        # loss = tf.math.multiply(loss, weights)
+        loss1 += criterion(target, output, sample_weight=weights)
         # print(loss)
         # loss = tf.clip_by_value(loss, clip_value_min=0, clip_value_max=float("inf"))
-        loss1 += tf.reduce_mean(loss)
+        # loss1 += tf.reduce_mean(loss)
 
         # pred = tf.math.reduce_max(output, axis = 3, keepdims=True)
         pred = tf.math.argmax(output, axis=3)

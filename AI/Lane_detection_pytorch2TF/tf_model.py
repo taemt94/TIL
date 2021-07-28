@@ -36,7 +36,7 @@ class UNet(tf.keras.layers.Layer):
         self.up4 = up(128, 64)
         self.outc = outconv(64, n_classes)
 
-    def call(self, x):
+    def __call__(self, x):
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -93,7 +93,7 @@ class UNet_ConvLSTM(tf.keras.Model):
                                  bias=True,
                                  return_all_layers=False)
     
-    def call(self, x):
+    def __call__(self, x):
         # print(f"call {x.shape}")
         # x = tf.unstack(x, axis=1)
         
@@ -153,7 +153,7 @@ class TestModel(tf.keras.Model):
     def __init__(self):
         super(TestModel, self).__init__()
         time.sleep(60)
-    def call(self, x):
+    def __call__(self, x):
         return x
 
 if __name__=="__main__":
