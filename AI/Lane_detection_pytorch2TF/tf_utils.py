@@ -135,7 +135,7 @@ class ConvLSTMCell(tf.keras.layers.Layer):
 
         c_next = f * c_cur + i * g
         h_next = o * tf.tanh(c_next)
-        # print(h_next.shape, c_next.shape)
+        print(h_next.shape, c_next.shape)
         return h_next, c_next
     
     def init_hidden(self, batch_size):
@@ -194,7 +194,7 @@ class ConvLSTM(tf.keras.layers.Layer):
             ## (timesteps, batch_size, channels, height, width) -> (batch_size, timesteps, channels, height, width)
             input_tensor = tf.transpose(input_tensor, perm=[1, 0, 2, 3, 4])
         
-        ## Implement stateful ConvLSTM
+        # Implement stateful ConvLSTM
         if hidden_state is not None:
             raise NotImplementedError()
         else:
@@ -207,22 +207,17 @@ class ConvLSTM(tf.keras.layers.Layer):
         cur_layer_input = input_tensor
 
         for layer_idx in range(self.num_layers):
+            # h, c = hidden_state[layer_idx]
             h, c = hidden_state[layer_idx]            
             output_inner = []
-            # print(f"Layer {layer_idx + 1} starts.") 
             for t in range(seq_len):
-                # print()
-                # print(f"Seqeunce {t + 1} starts.")
                 h, c = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :], cur_state=[h, c])
-                # print(f"h.shape: {h.shape} c.shape: {c.shape}")
                 output_inner.append(h)
             
             layer_output = tf.stack(output_inner, axis=1)
             cur_layer_input = layer_output
 
             layer_output = tf.transpose(layer_output, perm=[1, 0, 2, 3, 4])
-            # print(f"layer_output.shape: {layer_output.shape}")
-            # print()
             layer_output_list.append(layer_output)
             last_state_list.append([h, c])
 
@@ -236,8 +231,6 @@ class ConvLSTM(tf.keras.layers.Layer):
         init_states = []
         for i in range(self.num_layers):
             init_states.append(self.cell_list[i].init_hidden(batch_size))
-            # for j in range(2):
-            #     print(f"init_state[{i}].shape: {init_states[i][j].shape}")
         return init_states
 
     @staticmethod

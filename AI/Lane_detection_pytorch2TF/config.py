@@ -25,7 +25,7 @@ def args_setting():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch UNet-ConvLSTM')
     parser.add_argument('--model',type=str, default='UNet-ConvLSTM',help='( UNet-ConvLSTM | SegNet-ConvLSTM | UNet | SegNet | ')
-    parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=15, metavar='N',
                         help='input batch size for training (default: 10)')
     parser.add_argument('--test-batch-size', type=int, default=1, metavar='N',
                         help='input batch size for testing (default: 100)')

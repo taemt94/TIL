@@ -2,8 +2,6 @@ from re import L
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow import data
-from tensorflow.keras.preprocessing import image
-from tensorflow.python.ops.numpy_ops.np_math_ops import isnan
 import config
 import time
 from config import args_setting
@@ -19,6 +17,8 @@ from tf_model import generate_model
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 if len(physical_devices) > 0:
     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+
 def train(args, epoch, model, train_loader, optimizer, criterion):
     since = time.time()
     for batch_idx,  sample_batched in enumerate(train_loader):
@@ -27,7 +27,7 @@ def train(args, epoch, model, train_loader, optimizer, criterion):
         with tf.GradientTape() as tape:
             output, _ = model(data)
             # print(model.summary())
-            output = tf.convert_to_tensor(output)
+            # output = tf.convert_to_tensor(output)
             # output = tf.keras.layers.Softmax(axis=-1)(output)
             # print(target.shape, output.shape)
             
@@ -35,17 +35,21 @@ def train(args, epoch, model, train_loader, optimizer, criterion):
             # loss = criterion(target, output)
             weights = tf.cast(target, dtype=tf.float32) + 0.02
             # loss = tf.math.multiply(loss, weights)
+            # print("target:", target.shape, "output:", output.shape)
             loss = criterion(target, output, sample_weight=weights)
+            # loss = criterion(output, target, sample_weight=weights)
             
             # print(loss)
             # loss = tf.clip_by_value(loss, clip_value_min=0, clip_value_max=float("inf"))
             # loss = tf.reduce_mean(loss)
             # print(loss)
             
-        gradients = tape.gradient(loss, model.trainable_weights)
-        # print(gradients)
-        optimizer.apply_gradients(zip(gradients, model.trainable_weights))
-
+        gradients = tape.gradient(loss, model.trainable_variables)
+        # print(len(gradients))
+        # print(model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        # print(optimizer.learning_rate)
+        # break
         if batch_idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), train_loader.dataset_size,
@@ -95,23 +99,6 @@ def val(args, model, val_loader, criterion):
     # model.save(model, '%s.pth'%val_acc)
     model.save_weights('model%d'%val_acc)
 
-
-# def get_parameters(model, layer_name):
-#     import torch.nn as nn
-#     modules_skipped = (
-#         nn.ReLU,
-#         nn.MaxPool2d,
-#         nn.Dropout2d,
-#         nn.UpsamplingBilinear2d
-#     )
-#     for name, module in model.named_children():
-#         if name in layer_name:
-#             for layer in module.children():
-#                 if isinstance(layer, modules_skipped):
-#                     continue
-#                 else:
-#                     for parma in layer.parameters():
-#                         yield parma
 def limit_gpu(gb):
     gpus = tf.config.experimental.list_physical_devices('GPU')
     num_gpu = 1
@@ -148,7 +135,8 @@ if __name__ == '__main__':
     #load model
     model = generate_model(args)
     scheduler = tf.keras.optimizers.schedules.ExponentialDecay(args.lr, decay_steps=1, decay_rate=0.5, staircase=True)    
-    optimizer = tf.keras.optimizers.Adam(learning_rate=scheduler)
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=scheduler)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.005)
     # optimizer = torch.optim.Adam([
     #     {'params': get_parameters(model, layer_name=["inc", "down1", "down2", "down3", "down4"]), 'lr': args.lr * 0.0},
     #     {'params': get_parameters(model, layer_name=["outc", "up1", "up2", "up3", "up4"]), 'lr': args.lr * 0.1},
@@ -166,7 +154,7 @@ if __name__ == '__main__':
 
     # criterion = tf.nn.weighted_cross_entropy_with_logits(pos_weight=class_weight, name=None)
     # criterion = torch.nn.CrossEntropyLoss(weight=class_weight)
-    criterion = tf.keras.losses.SparseCategoricalCrossentropy()
+    criterion = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     # criterion = tf.keras.losses.CategoricalCrossentropy()
     # criterion = tf.nn.sparse_softmax_cross_entropy_with_logits()
     # criterion = tf.keras.losses.BinaryCrossentropy(from_logits=True)

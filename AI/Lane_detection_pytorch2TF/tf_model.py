@@ -50,27 +50,6 @@ class UNet(tf.keras.layers.Layer):
         return x
 
 class UNet_ConvLSTM(tf.keras.Model):
-    # def __init__(self, n_channels, n_classes):
-    #     super(UNet_ConvLSTM, self).__init__()
-    #     self.inc = inconv(n_channels, 64)
-    #     self.down1 = down(64, 128)
-    #     self.down2 = down(128, 256)
-    #     self.down3 = down(256, 512)
-    #     self.down4 = down(512, 512)
-    #     self.up1 = up(1024, 256)
-    #     self.up2 = up(512, 128)
-    #     self.up3 = up(256, 64)
-    #     self.up4 = up(128, 64)
-
-    #     self.outc = outconv(64, n_classes)
-    #     self.convlstm = ConvLSTM(input_size=(8, 16),
-    #                              input_dim=512,
-    #                              hidden_dim=[512, 512],
-    #                              kernel_size=(3, 3),
-    #                              num_layers=2,
-    #                              batch_first=True,
-    #                              bias=True,
-    #                              return_all_layers=False)
     def __init__(self, n_channels, n_classes):
         super(UNet_ConvLSTM, self).__init__()
         self.inc = inconv(n_channels, 64)
@@ -92,6 +71,11 @@ class UNet_ConvLSTM(tf.keras.Model):
                                  batch_first=True,
                                  bias=True,
                                  return_all_layers=False)
+        
+        self.tf_convlstm =  Sequential([
+                                tf.keras.layers.ConvLSTM2D(filters=512, kernel_size=3, padding='same', activation='relu', return_sequences=True),
+                                tf.keras.layers.ConvLSTM2D(filters=512, kernel_size=3, padding='same', activation='relu')
+                            ])
     
     def __call__(self, x):
         # print(f"call {x.shape}")
@@ -116,16 +100,19 @@ class UNet_ConvLSTM(tf.keras.Model):
             # data.append(x5)
             # print(len(data))
         # print(f"len: {len(data)}")
-        # data = tf.concat(data, axis=1)
+        data = tf.concat(data, axis=1)
         # print(f"After concat: {data.shape}")
-        data = tf.transpose(data, perm=[0, 1, 4, 2, 3])
+        # data = tf.transpose(data, perm=[0, 1, 4, 2, 3])
         # print(f"Before convlstm: {data.shape}")
-        lstm, _ = self.convlstm(data)
-        test = lstm[-1][-1,:, :, :, :]
+        # lstm, _ = self.convlstm(data)
+        # test = lstm[-1][-1,:, :, :, :]
         # print(f"After convlstm: {test.shape}")
-        test = tf.transpose(test, perm=[0, 2, 3, 1])
+        # test = tf.transpose(test, perm=[0, 2, 3, 1])
         # print(f"After transpose: {test.shape}")
 
+        ### TF ConvLSTM Version ###
+        test = self.tf_convlstm(data)
+        ###########################
         x = self.up1(test, x4)
         x = self.up2(x, x3)
         x = self.up3(x, x2)
