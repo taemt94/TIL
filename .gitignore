@@ -13,3 +13,4 @@ __pycache__/
 checkpoint
 AI/Lane_detection_pytorch2TF/data/
 AI/Lane_detection_pytorch2TF/tf_train_backup.py
+test.ipynb
