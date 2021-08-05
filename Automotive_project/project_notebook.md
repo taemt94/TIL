@@ -149,3 +149,36 @@
   1. <https://github.com/bigheadG/mmWave>
   2. <https://github.com/m6c7l/pymmw>
   3. <https://github.com/ibaiGorordo/AWR1642-Read-Data-Python-MMWAVE-SDK-2>
+
+# 2021/08/05
+### TI Radar review
+- 실차에 장착되어 있는 레이더를 통해서 데이터를 수집해야 해서, 수집 환경을 구축하는데 레이더 지식은 난무할 뿐더러 공부할 시간도 얼마 없어서 아주 애를 먹었다.
+- 삽질 끝에 현재 레이더 수집 가능한 환경은 구축이 된 상태이고, 짧은 시간동안 습득한 것들을 정리해두려고 한다.
+- 현재 차량에 장착된 레이더의 모델명은 다음과 같고, 차량 전방에 3대, 후방에 3대로 총 6대의 레이더가 장착되어 있다.  
+  `TI IWR1642`
+- IWR1642이지만, 문서에 xWR16xx 라고 쓰여 있으면 같은 장비라고 생각하면 된다.
+- TI 레이더의 경우 리눅스 상에서 USB 포트를 통해 연결하면 아래와 같은 디렉토리가 생기는데, 'ttyACM0'은 컴퓨터에서 레이더로 configuration을 보내는 포트이고, 'ttyACM1'은 컴퓨터에서 보낸 configuration을 기준으로 레이더가 데이터를 송신해주는 포트이다.  
+  `/dev/ttyACM0`  
+  `/dev/ttyACM1`
+- 여러 대의 레이더를 사용할 경우 포트 번호는 증가한다.
+- 첫번째로 가장 큰 삽질을 한 것은 SDK 버전 때문이다.
+- Texas Instrument 홈페이지에서 보면, 최신 버전의 SDK(현재 3.5)가 IWR1642을 지원한다고 쓰여있지만, 실제로 커뮤니티를 통해 문의한 결과 SDK 2.0만 IWR1642를 서포트한다고 답변 받았다.
+- 이러한 사실을 몰라 몇 일 동안 데이터 수신은 안되고 원인도 파악이 안되서 아주 애를 먹었다.
+- 레이더로 보낼 cfg(configuration) 파일 또한 SDK 2.0을 기반으로 하여야 레이더와 원활히 연결된다.
+- 아래는 레이더 공부를 하면서 자주 등장하였던 약어 및 용어를 정리한 것이다.
+- 각 용어에 대한 디테일한 내용을 이해한 것은 아니지만, 레이더를 만지다 보면 자주 등장하는 단어들이라 참고용으로 사용하려고 한다.
+  - CW Radar: Continuous Wave Radar
+  - FMCW Radar: Frequency Modulated CW Radar
+    - 실차에 장착된 레이더가 여기에 해당한다.
+    - 레이더가 사용하는 적외선이 일정한 주파수를 가지는 것이 아닌, 시간에 따라 변화하는 주파수를 가지고 적외선을 쏘는 레이더로, 이를 통해 도플러 효과를 이용하여 물체의 상대속도를 측정할 수 있다고 한다.
+  - Chirp: A signal in which the frequency increases or decreases with time
+  - Tx: Transmitter
+  - Rx: Receiver
+  - RF: Radio Frequency
+  - ADC: Analog-to-Digital Converter
+  - MCU: Micro Controller Unit
+  - DSP: Digital Signal Processor
+  - UART: Universal Asynchronous Receiver/Transmitter
+  - LVDS: Low Voltage Differential Signaling
+  - RCS: Radar Cross Section
+  - SS: Sub-System
