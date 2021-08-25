@@ -276,3 +276,5 @@ $ hostname -I
 - 실제로 `xinput list`를 통해서 확인해보아도 id만 다른 같은 이름의 터치 모니터가 2개인 것을 보았다.
 - 이러한 경우 `xinput set-prop` 명령어를 사용할 때 터치 모니터 이름을 입력하는 위치에 이름 string 대신 id(int)를 입력해주면 된다.
 - 해당 모니터의 경우 같은 모니터 이름에 2개의 id가 나와서 두 id에 대해 모두 `xinput set-prop` 명령어를 사용하였고 그 결과 터치 입력이 제대로 동작하였다.
+
+- Reference : <https://wiki.ubuntu.com/X/InputCoordinateTransformation>
