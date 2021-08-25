@@ -231,3 +231,48 @@ $ hostname -I
   ```
   $ sudo modinfo [모듈명]
   ```
+
+# 2021/08/25
+### TouchScreen Calibration on Ubuntu 20.04
+- 차량용 컴퓨터의 모니터로 사용하던 터치 모니터가 Ubuntu 20.04로 버전업을 하고 나서 터치 입력이 제대로 되지 않기 시작하였다.
+- 처음에는 모니터 문제인줄 알고 Windows 컴퓨터로 가져와서 테스트를 해봤는데, Windows 컴퓨터에서는 터치가 제대로 동작하였다.
+- 구글링 해본 결과, 차량에서 터치 모니터를 사용하기 위해 화면 방향을 세로 방향(Portrait Right)으로 변경하였는데, 이 때 터치 입력의 좌표값이 제대로 calibrate되지 않아서 생기는 문제였다.
+- 해당 문제는 아래와 같이 해결하면 된다.
+  ```
+  $ xinput list ## Input device들의 목록을 보여준다.
+  ```
+- 위의 명령어를 통해 나온 리스트로 터치 모니터의 이름을 확인해야 한다.
+- 터치 모니터의 경우 누구나 식별하기 쉬운 이름을 가지고 있다.
+
+  ```
+  $ xinput list-props "Touch Monitor name.." | grep "Coordinate Transformation Matrix"
+  ```
+- 위의 명령어로 현재 터치 모니터 터치 입력의 좌표 변환 행렬값(Coordinate Transformation Matrix, CTM)을 확인할 수 있다.
+- 모니터의 가장 기본 방향인 가로(Landscape) 방향의 경우 CTM은 Identity 행렬이다.
+- 확인 결과, 모니터의 방향은 세로 방향으로 변경되었더라도 이 CTM이 기본 identity 행렬이라서 터치 입력의 좌표가 변경되지 않았던 것이었다.
+- 이러한 경우 Linux 명령어를 통해 터치 입력의 좌표축을 변경해주어야 한다.
+- Linux 명령어를 통해 모니터의 방향 및 터치 인풋의 방향을 변경하는 방법은 아래와 같다.
+
+- 모니터 방향을 왼쪽 세로 방향(Portrait Left, Clockwise $$90^\circ$$)으로 변경하는 경우
+  ```
+  $ xrandr -o left ## 모니터 방향을 Portrait Left로 변경
+  $ xinput set-prop "Touch Monitor name.." "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1 ## 터치 입력의 좌표축 변경
+  ```
+- 위의 두번째 명령어 마지막의 숫자는 CTM을 나타내는 3*3 크기의 행렬을 의미한다.
+
+- 모니터 방향을 오른쪽 세로 방향(Portrait Right, Counterclockwise $$90^\circ$$)으로 변경하는 경우
+  ```
+  $ xrandr -o right ## 모니터 방향을 Portrait Right로 변경
+  $ xinput set-prop "Touch Monitor name.." "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1 ## 터치 입력의 좌표축 변경
+  ```
+
+- 모니터 방향을 가로 반대 방향(Landscape Invert, Clockwise $$180^\circ$$)으로 변경하는 경우
+  ```
+  $ xrandr -o inverted ## 모니터 방향을 Landscape Invert로 변경
+  $ xinput set-prop "Touch Monitor name.." "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1 ## 터치 입력의 좌표축 변경
+  ```
+
+- 추가적으로, `xinput` 명령어를 사용하여 좌표축을 변경할 때 같은 터치 모니터가 여러 개라는 경고가 뜨면서 좌표축 변경이 되지 않는 경우가 있다.
+- 실제로 `xinput list`를 통해서 확인해보아도 id만 다른 같은 이름의 터치 모니터가 2개인 것을 보았다.
+- 이러한 경우 `xinput set-prop` 명령어를 사용할 때 터치 모니터 이름을 입력하는 위치에 이름 string 대신 id(int)를 입력해주면 된다.
+- 해당 모니터의 경우 같은 모니터 이름에 2개의 id가 나와서 두 id에 대해 모두 `xinput set-prop` 명령어를 사용하였고 그 결과 터치 입력이 제대로 동작하였다.
