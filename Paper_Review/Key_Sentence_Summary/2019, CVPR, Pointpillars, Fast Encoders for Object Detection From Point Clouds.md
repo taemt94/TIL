@@ -124,5 +124,5 @@ demonstrate state of the art results on cars, pedestrians,
 and cyclists on both BEV and 3D benchmarks.
 
 ## 2. PointPillars Network
-\!\[PointPillars network overview](./PointPillars_network_overview.JPG)
+![PointPillars network overview](./PointPillars_network_overview.JPG)
 ### 2.1. Pointcloud to Pseudo-Image
