@@ -14,4 +14,4 @@ checkpoint
 AI/Lane_detection_pytorch2TF/data/
 AI/Lane_detection_pytorch2TF/tf_train_backup.py
 test.ipynb
-"TIL\LIDAR\plot_PCD - 복사본.txt"
+".\LIDAR\plot_PCD - 복사본.txt"
