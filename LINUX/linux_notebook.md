@@ -278,3 +278,18 @@ $ hostname -I
 - 해당 모니터의 경우 같은 모니터 이름에 2개의 id가 나와서 두 id에 대해 모두 `xinput set-prop` 명령어를 사용하였고 그 결과 터치 입력이 제대로 동작하였다.
 
 - Reference : <https://wiki.ubuntu.com/X/InputCoordinateTransformation>
+
+# 2021/09/01
+### Sound output device default setting on Ubuntu
+- 우분투 상에서 PC에 연결된 스피커가 여러개일 경우 기본 스피커 설정하는 방법
+  - 아래의 명령어를 터미널 상에 치면 현재 연결되어 있는 device들을 확인할 수 있다.
+  - 여기서 기본값으로 사용할 스피커의 이름을 복사한다.
+  ```
+  pactl list short sinks
+  ```
+  - 아래의 명령어를 사용하면 원하는 기기로 기본 스피커를 설정할 수 있다.
+  ```
+  pactl set-default-sink <Device_Name>
+  ```
+  - 또한, Ubuntu의 Startup Applications을 사용하면 PC의 전원이 켜질 때마다 위의 명령어를 통해 기본 스피커가 설정되도록 할 수 있다.
+  - Ubuntu에서 Startup Applications을 검색하여 열고, "Add"를 누른 후 'command' 위치에 위의 명령어를 입력하고 "Save"를 눌러 startup application을 추가해주면 된다.
