@@ -293,3 +293,24 @@ $ hostname -I
   ```
   - 또한, Ubuntu의 Startup Applications을 사용하면 PC의 전원이 켜질 때마다 위의 명령어를 통해 기본 스피커가 설정되도록 할 수 있다.
   - Ubuntu에서 Startup Applications을 검색하여 열고, "Add"를 누른 후 'command' 위치에 위의 명령어를 입력하고 "Save"를 눌러 startup application을 추가해주면 된다.
+
+# 2021/09/30
+### Install .deb/.rpm file on Ubuntu
+- 확장자가 deb이거나 또는 rpm인 파일은 리눅스에서 사용하는 프로그램 설치 패키지이다.
+- 이러한 파일들을 사용하여 프로그램을 설치하는 방법은 아래와 같다.
+1. deb 파일 설치
+  - deb 파일은 데비안 꾸러미 파일이고, 이는 `dpkg` 명령어를 사용하여 설치한다. 
+  ```
+  $ dpkg -i [file_name.deb]
+  ```
+  - 설치한 프로그램을 제거할 때에는 `-r` 옵션을 사용하면 된다.
+  ```
+  $ dpkg -r [file_name.deb]
+  ```
+2. rpm 파일 설치
+  - rpm 파일은 레드햇 패키지 관리자에서 사용되는 파일이다.
+  - 우분투 상에서는 rpm 파일을 이용하여 프로그램을 설치하는 것을 권장하지 않는다고 한다. 
+  - 보통 rpm 파일이 존재할 경우 deb 파일도 존재하기 때문에 크게 문제가 되지 않지만, 혹시 rpm 파일을 꼭 사용해야 할 때에는 `alien` 명령어를 사용하여 rpm 파일을 deb 파일로 변환하면 된다.
+  ```
+  $ alien [file_name.rpm]
+  ```
