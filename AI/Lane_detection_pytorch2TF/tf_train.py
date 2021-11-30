@@ -29,11 +29,12 @@ def train(args, epoch, model, train_loader, optimizer, criterion):
             # print(model.summary())
             # output = tf.convert_to_tensor(output)
             # output = tf.keras.layers.Softmax(axis=-1)(output)
-            # print(target.shape, output.shape)
+            print(target.shape, output.shape, type(target))
             
             # loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output)
             # loss = criterion(target, output)
             weights = tf.cast(target, dtype=tf.float32) + 0.02
+            # weights = target + 0.02
             # loss = tf.math.multiply(loss, weights)
             # print("target:", target.shape, "output:", output.shape)
             loss = criterion(target, output, sample_weight=weights)
@@ -97,7 +98,7 @@ def val(args, model, val_loader, criterion):
     print('\nAverage loss: {:.4f}, Accuracy: {}/{} ({:.5f}%)\n'.format(
         loss1, int(correct), (val_loader.dataset_size * config.label_height * config.label_width), val_acc))
     # model.save(model, '%s.pth'%val_acc)
-    model.save_weights('model%d'%val_acc)
+    model.save_weights('model%d'%val_acc*10000)
 
 def limit_gpu(gb):
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -171,7 +172,7 @@ if __name__ == '__main__':
     
     
     # print(train_loader[0]['data'].shape)
-
+    
 
     for epoch in range(1, args.epochs+1):
         train(args, epoch, model, train_loader, optimizer, criterion)
