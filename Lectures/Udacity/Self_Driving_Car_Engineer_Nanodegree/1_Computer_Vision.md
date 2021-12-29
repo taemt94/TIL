@@ -1,4 +1,6 @@
-## 2021/12/24
+#### 2021/12/24
+# Computer Vision
+## Lesson 1: Introduction to Deep Learning for Computer Vision
 ### Course Outline
 - Introduction to Deep Learning for Computer Vision (this lesson)
 - Overview of the Machine Learning Workflow
@@ -85,3 +87,72 @@
 
 - Github repository to add to your portfolio.
 - Video to demo your model's performance.
+
+#### 2021/12/29
+## Lesson 2: The Machine Learning Workflow
+### Introduction to the Machine Learning Workflow
+- In the lesson, we are going to learn how to think about Machine Learning problems. Machine Learning (ML) is not only about cool math and modeling but also about choosing setting the problem, identifying the client needs and the long term goals. This lesson is going to be organized as follow:
+  - We will practice framing Machine Learning problems by identifying the key stakeholders and choosing the correct metrics.
+  - Because ML is about data, we will discuss the different challenges linked to data.
+  - We will also tackle how to organize your dataset when solving a ML problem to be confident that you created a model that will perform well on new data.
+  - Finally, we will see how you can leverage different tools to pinpoint your model's limitations.
+- In this course, we will be using the German Traffic Sign Recognition Benchmark (GTSRB) multiple times for exercises. A downsampled version of the dataset has already been downloaded to your workspace.
+
+### Big Picture
+- In the following videos and lessons, we are going to take a deeper dive into each component of the workflow.
+  - Problem setup is the phase where we set the boundaries of the problem and will be tackled in the next few videos.
+  - The Data part of the workflow consists in getting familiar with the available dataset and will be the main focus of the next lesson on the camera sensor.
+  - Modeling is such a critical step that we will spend 3 lessons on it. Modeling consists in choosing and training different models and picking the best one.
+- Classifying Traffic Signs
+  - Problem: Classifying traffic signs from images
+  - Data: Thousand of images for each type of traffic sign
+  - Model: Logistic regression, neural network
+
+### Framing the Problem
+- Do I even need Machine Learning?
+- Who are the key stakeholders?
+- What data do I have access to?
+- Which metrics should I use?
+- `As a machine learning engineer, it is easy to solely focus on model performances, but you may need to consider other factors as well`
+- Unless you are taking part in a Machine Learning competition, the model's performance is rarely the only thing you care about. For example, in a self-driving car system, the model's inference time (the time it takes to provide a prediction) is also an important factor. A model that can digest 5 images per seconds is better than a model that can only manage one image per second, even if the second one is performing better. In this case, the inference time is also a metric to choose our model.
+
+- Understanding your data pipeline is very important because it will drive your model development. In some cases, getting new data is relatively easy but annotating them (by associating a class name for example) may be expensive. In this case, you would want to create a model that requires less data or that can work with unlabeled data.
+- `Machine Learning is an iterative process. You should always start with a simple model before building on complexity. Moreover, the business side often drives the metrics and the problem itself.`
+
+### Identifying the Key Stakeholders
+- Who is going to be impacted by the product?
+- Stakeholders if ride sharing app:
+  - Customers
+  - Drivers
+  - Engineering teams
+- As a Machine Learning Engineer, you will rarely be the end user of your product. Therefore, you need to pinpoint the different stakeholders of the problem you are trying to solve. Why? Because this will drive your model development.
+- Congratulations! Self-driving car technology will indeed impact many aspect of our society and this is what makes this technology so exciting. Daily commuters, insurance companies and environmentalists will benefit from the reduced traffic and car accidents. I recommend reading this excellent article on [the impact of self-driving cars on cities](https://www.washingtonpost.com/transportation/2019/07/20/city-planners-eye-self-driving-vehicles-correct-mistakes-th-century-auto/).
+
+### Choosing Metrics
+- Business metrics != Machine Learning metrics
+- A good metric must be easy to understand and adapted to a specific problem
+- Machine leanring metrics, like accuracy, may not be the best indicator of success from the business side
+- You created an app that classify an image as containing a burger or not.
+  - **True Positive (TP)**: The image contains a burger and the model predicts burger
+  - **True Negative (TN)**: The image does not contain a burger and the model does not predict burger
+  - **False Positive (FP)**: The image does not contain a burger and the model predicts burger
+  - **False Negative (FN)**: The image contains a burger and the model does not predict burger
+
+- Each Machine Learning problem requires its own metrics, and whereas some metrics like Accuracy may be suited for many problems, you need to keep in mind the consequences of misprediction. 
+- Let's consider the following: you are building a spam classification algorithm. 
+- Well, you should aim for very few False Positives, because you do not want your algorithm to classify some potentially important emails to your spam folder. 
+- A False Negative however is simply a spam located in your inbox, which could be manually removed by the user.
+
+### Classification & Object Detection Metrics
+- **Precision = TP / (TP + FP)**
+  - Of the elements classified as a particular class, how many did we get right? For example, we classified 6 images as containing burgers and only 5 of them actually contain a burger. The precision is 5/6
+  - True 라고 한 것 중에 실제로 True인 비율
+- **Recall = TP / (TP + FN)**
+  - The number of images classified correctly divided by the total number of images. For example, we have 40 images of burgers and we classified 15 of them correctly. The recall is 15/40.   
+  - True 여야 하는데 진짜 True라고 맞힌 비율
+- **Accuracy = TP + TN / (TP + FN + FP + TN)**
+  - (Only for classification problems) The number of correctly classified images over the total number of images.
+--- 
+- **Intersection over Union**
+  - IOU is defined as the ratio of the intersection of bounding boxes and the union of bounding boxes.
+  - `An IOU of 0.5 between a ground-truth bounding box and a detected bounding box is a pretty common threshold to qualify the detection as a TP.`
