@@ -174,3 +174,15 @@ Note: Just as with other Workspace types, the Desktop will disconnect after 30 m
 - GPU Workspaces can also be run without time restrictions when the GPU mode is disabled. The "Enable"/"Disable" button can be used to toggle GPU mode. Note that in GPU-enabled workspaces, some libraries will not be available without GPU support.
   
 NOTE: Toggling GPU support may switch the physical server your session connects to, which can cause data loss unless you click the save button before toggling GPU support.
+
+#### 2021/12/31
+### Data Acquisition and Visualization
+#### Data
+- Understand the data:
+  - Orogin
+  - Sensor
+  - Labels
+- ML engineering is all about data!
+- `You will spend your time building data pipelines, creating data visualization, and trying to understand as much as possible about your dataset.`
+- In many cases, you will need to gather your own data but in some, you will be able to leverage Open Source datasets, such as the Google Open Image Dataset. However, keep in mind the end goal and where your algorithm will be deployed or used.
+- Because of something called domain gap, an algorithm trained on a specific dataset may not perform well on another. For example, a pedestrian detection algorithm trained on data gathered with a specific camera may not be able to accurately detect pedestrians on images captured with another camera.
