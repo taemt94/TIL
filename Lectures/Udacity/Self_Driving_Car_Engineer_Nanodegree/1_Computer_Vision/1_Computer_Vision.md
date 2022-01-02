@@ -186,3 +186,6 @@ NOTE: Toggling GPU support may switch the physical server your session connects 
 - `You will spend your time building data pipelines, creating data visualization, and trying to understand as much as possible about your dataset.`
 - In many cases, you will need to gather your own data but in some, you will be able to leverage Open Source datasets, such as the Google Open Image Dataset. However, keep in mind the end goal and where your algorithm will be deployed or used.
 - Because of something called domain gap, an algorithm trained on a specific dataset may not perform well on another. For example, a pedestrian detection algorithm trained on data gathered with a specific camera may not be able to accurately detect pedestrians on images captured with another camera.
+
+#### 2022/01/02
+### Exercise: Data Acquisition and Visualization
