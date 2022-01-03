@@ -6,7 +6,7 @@ import pathlib
 from PIL import Image
 
 plt.style.use('default')
-plt.rcParams['figure.figsize'] = (10, 8)
+plt.rcParams['figure.figsize'] = (20, 16)
 plt.rcParams['font.size'] = 12
 
 def viz(ground_truth):
@@ -16,32 +16,38 @@ def viz(ground_truth):
     - ground_truth [list[dict]]: ground truth data
     """
     # IMPLEMENT THIS FUNCTION
-    # print(ground_truth[0])
-    # print(len(ground_truth))
-    # plt.figure(figsize=(10, 2))
-    plt.axis('off')
     image_base_path = pathlib.Path().cwd() / 'data' / 'images'
+
+    total_classes = []
+    first = 1
+    for gt in ground_truth:
+        if first:
+            total_classes = gt['classes']
+            first = 0
+        else:
+            total_classes += gt['classes']
+    total_classes = np.unique(np.array(total_classes))
+    bbox_colormap = {}
+    for cl in total_classes:
+        if cl not in bbox_colormap.keys():
+            if cl == 1:
+                bbox_colormap[cl] = 'g'
+            elif cl == 2:
+                bbox_colormap[cl] = 'r'
     for i, gt in enumerate(ground_truth):
-        ax = plt.subplot(2, 1, i + 1)
+        ax = plt.subplot(4, 5, i + 1)
         ax.axis('off')
         filename = image_base_path / gt['filename']
         image = Image.open(filename)
-        print(gt.keys())
-        # image.show()
         image = np.array(image)
         bboxes = gt['boxes']
         classes = gt['classes']
         for bbox, cl in zip(bboxes, classes):
-            x1, y1, x2, y2 = bbox
+            y1, x1, y2, x2 = bbox
             rect = patches.Rectangle((x1, y1), width=x2-x1, height=y2-y1,
-                                     edgecolor='g', fill=False)
+                                     edgecolor=bbox_colormap[cl], fill=False)
             ax.add_patch(rect)
-            ax.text((x1+x2)/2, y2+10, f"Class[{cl}]")
-        
         ax.imshow(image)
-        if i == 1:
-            break
-        
     plt.show()
         
 
