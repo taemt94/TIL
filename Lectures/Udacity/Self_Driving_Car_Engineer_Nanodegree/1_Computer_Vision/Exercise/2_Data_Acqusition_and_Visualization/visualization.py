@@ -48,6 +48,7 @@ def viz(ground_truth):
                                      edgecolor=bbox_colormap[cl], fill=False)
             ax.add_patch(rect)
         ax.imshow(image)
+    plt.tight_layout()        
     plt.show()
         
 
