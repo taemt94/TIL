@@ -186,6 +186,51 @@ NOTE: Toggling GPU support may switch the physical server your session connects 
 - `You will spend your time building data pipelines, creating data visualization, and trying to understand as much as possible about your dataset.`
 - In many cases, you will need to gather your own data but in some, you will be able to leverage Open Source datasets, such as the Google Open Image Dataset. However, keep in mind the end goal and where your algorithm will be deployed or used.
 - Because of something called domain gap, an algorithm trained on a specific dataset may not perform well on another. For example, a pedestrian detection algorithm trained on data gathered with a specific camera may not be able to accurately detect pedestrians on images captured with another camera.
-
+---
 #### 2022/01/02
 ### Exercise: Data Acquisition and Visualization
+---
+#### 2022/01/04
+### Exploratory Data Analysis (EDA)
+- Machine Learning algorithms may be very sensitive to domain shift. This domain shift can happen at different levels:
+
+  - **Weather / light conditions**: for example, an algorithm trained only on sunny images is not going to perform well when shown rainy or night-time data.
+  - **sensor**: a sensor change or different processing methods will create a domain shift.
+  - **environment**: an algorithm trained on low intensity traffic data will not perform well on high intensity traffic data for example.
+- An extensive Exploratory Data Analysis (EDA) is critical to the success of any ML project. Why? Because during this phase, the ML engineer gets acquainted with the dataset and discovers any potential challenges with the data. The EDA is such an important part of the project that ML engineers spend a few days on it alone. For a vision problem, it requires looking at 1,000s of images in your dataset!
+
+### Cross Validation
+- The goal of our ML algorithm is to be deployed in a production environment. For example, the object detection algorithm you will create in the final project could be deployed directly in a self driving car. But before we can deploy such algorithms, we need to be sure that it will perform well in any environments it will encounter. In other words, we want to evaluate the generalization ability of our model.
+
+- We are going to introduce three new concepts:
+  - overfitting: when the model does not generalize well
+  - bias-variance tradeoff: why is it hard to create a balanced model
+  - cross validation: a technique to evaluate how well the model generalizes
+
+#### Overfitting
+- When a model is overfitting, it loses its power to generalize. It often happens when the chosen model is too complex and starts extracting noise instead of meaningful features. For example, a car detection model is overfitting when it starts extracting brand specific features of the cars in the dataset (e.g., car logo) instead of broader features (wheels, shape etc).
+
+- Overfitting raises a very important question. How do we know if our model will generalize properly or not? Indeed, when a single dataset is available, it will be challenging to know if we created a model that overfits or simply performs well.
+
+#### Training vs. Test Datasets
+- For now, we will use the terms training data to describe the data used to teach and create our algorithm and test data for any new, unseen data.
+
+#### Bias & Variance Trade-off
+- The **bias-variance tradeoff** illustrates one the most important challenges in Machine Learning. How do we create a model that performs well while keeping its ability to generalize to new, unseen data? The performance of our algorithm on such data is quantified by the test error. The test error can be decomposed in further into the bias and the variance.
+
+- The **bias** quantifies the quality of the fit of our model on the training data. A low bias means that our model has a very low error rate on the training dataset.
+
+- The **variance** quantifies the sensitivity of the model to the training data. In other words, if we were to replace our training dataset with another one, how much would the training error rate change? A low variance means that our model is not sensitive to the training data and generalizes well.
+
+#### Validation Sets & Cross Validation
+- Cross validation is a set of techniques to evaluate the capacity of our model to generalize and alleviate the overfitting challenges. In this course, we will leverage the validation set approach, where we split the available data into two splits:
+  - a training set, used to create our algorithm (usually 80-90% of the available data)
+  - a validation set used to evaluate it (10-20% of the available data)
+- Use the validation set to select the best parameters or compare models.
+- Test set: never evaluated on until the cross-validation is done.
+- Careful of data leakage:
+  - by aiming to get the best possible performances on the validation set, we leak information from training to validation.
+  - If the splits are not perfromed correctly.
+
+- In further videos, we will see how we can leverage this approach to alleviate the overfitting problem.
+- Other cross validation methods exist, such as LOO (Leave One Out) or k-fold cross validation but they are not suited to Deep Learning algorithms. You can read more about these other two techniques [here](https://www.cs.cmu.edu/~schneide/tut5/node42.html).
