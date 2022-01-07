@@ -234,3 +234,22 @@ NOTE: Toggling GPU support may switch the physical server your session connects 
 
 - In further videos, we will see how we can leverage this approach to alleviate the overfitting problem.
 - Other cross validation methods exist, such as LOO (Leave One Out) or k-fold cross validation but they are not suited to Deep Learning algorithms. You can read more about these other two techniques [here](https://www.cs.cmu.edu/~schneide/tut5/node42.html).
+
+#### 2021/01/07
+### TFRecord
+- Tf rerords are TensorFlow custom data format
+- They are not required to train a model with TensorFlow but may help to speed up data loading
+- Their structure is defined by proto files
+- TF records are created using Protocol buffers (protobuf), a mechanism to serialize data
+- For some pre-existing TensorFlow APIs, such as the object detection API that we will use for the final project, a TF Record format is required to train models.
+
+#### Waymo Open Dataset vs. TensorFlow Object Detection API
+- In the final project of this course, you will use data from the Waymo Open Dataset with the TensorFlow Object Detection API to perform object detection on camera images. While each use .tfrecord files, there is a difference in the structure of each. As such, the upcoming exercise will have you take a .tfrecord from the Waymo Open Dataset and convert it into a new .tfrecord useable by the TensorFlow Object Detection API.
+- While also linked in the exercise itself, you'll need a few resources to be able to do so more easily.
+ - First, [this repository](https://github.com/Jossome/Waymo-open-dataset-document) gives some additional information around the Waymo Open Dataset itself (note that Waymo link to [https://waymo.com/open/data/] therein now should be [https://waymo.com/open/data/perception], as Waymo has also added a "motion" component to the previous perception-only dataset).
+ - Secondly, [this tutorial for the TF Object Detection API](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#create-tensorflow-records) for converting from .xml to .tfrecord also shows certain steps that will apply in our case as well.
+ - This exercise will require some research on your own of the above documentation (and potentially other documentation) to reach a converted file; however, if you get stuck, it is perfectly reasonable to skip ahead to the solution video for some assistance.
+
+ #### Additional Resources
+ - [Using TFRecord and tf.train.Example from the TensorFlow documentation](tensorflow.org/tutorials/load_data/tfrecord)
+ - The above documentation will be useful to refer to as you work on the upcoming exercise.
