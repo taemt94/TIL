@@ -266,3 +266,38 @@ NOTE: Toggling GPU support may switch the physical server your session connects 
   - A **lower bound baseline** gives you an idea of a minimum expected performance. If you are getting metrics below such baseline, a red flag should be raised and should be concerned that something is wrong with your training pipeline. For example, for a classification problem, the random guess baseline is a good lower bound. Given C classes, the accuracy of your accuracy of your algorithm should be higher than 1/C.
 
 - **Model selection is a dynamic part of the ML workflow**. It requires many iterations. Unless you have some prior knowledge of the task, it is recommended to start with simple models and iterate on complexity (For example, Random guess -> Linear/Logistic Regression -> Polynomial Regression -> Neural Networks). **Keep in mind that the validation set should remain the same during this phase!**
+
+### Error Analysis
+- Two great indicators of performances : **loss** and **accuracy** (or other metrics)
+- Sorting images based on loss
+- Find **patterns** in error
+- **Understand metrics** value
+
+- Validation set metrics are a good indicator of **global performances** of the model but we often need a finer understanding. A metric like accuracy won't tell you if a certain class of objects is always misclassified, for example. For these reasons, one must perform an in-depth error analysis before iterating on the model.
+
+- Sorting predictions based on the metric or loss values is always a useful way to identify error patterns.
+
+- Helpful question : Given that the training accuracy and the validation accuracy are similar and based on your observations, how would you improve your model?
+  - The model may be underfitting. I would try to improve the model's complexity.
+  - I would try to improve the size of the training set.
+  - If the training dataset is missing examples of data that occurs in the validation set, you should try to increase its size.
+
+### Lesson Conclusion
+- The Machine Learning workflow is organized as follow:
+  - **Frame the problem**: understand the stakes, and define relevant metrics.
+  - **Understand the data**: perform an Exploratory Data Analysis, and extract patterns from the dataset.
+  - **Iterate on the model**: create a validation set, set up baselines, and iterate on models from simpler to more complex.
+
+- Glossary
+  - Accuracy: classification metric.
+  - Bias-Variance tradeoff: the challenges how creating a ML model that performs well while keeping an ability to generalize to new data.
+  - Cross validation: set of techniques to evaluate a model
+  - Domain gap: difference between dataset distributions.
+  - Exploratory Data Analysis (EDA): the process of analyzing a new dataset and extracting any relevant informations to the ML problem.
+  - Inference time: time taken by a model to output a prediction.
+  - Overfitting: when a model has good performances on a dataset but does not generalize well
+  - Precision: the number of correctly classified instances divided by the number of these instances.
+  - Recall: the number of images classified correctly divided by the total number of images.
+  - TfRecord: Tensorflow custom data format.
+  - Training set: dataset used to train a ML model.
+  - Validation set: dataset used to evaluate a ML model's performance.
