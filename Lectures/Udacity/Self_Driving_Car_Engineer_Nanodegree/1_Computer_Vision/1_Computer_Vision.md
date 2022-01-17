@@ -250,6 +250,19 @@ NOTE: Toggling GPU support may switch the physical server your session connects 
  - Secondly, [this tutorial for the TF Object Detection API](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#create-tensorflow-records) for converting from .xml to .tfrecord also shows certain steps that will apply in our case as well.
  - This exercise will require some research on your own of the above documentation (and potentially other documentation) to reach a converted file; however, if you get stuck, it is perfectly reasonable to skip ahead to the solution video for some assistance.
 
- #### Additional Resources
- - [Using TFRecord and tf.train.Example from the TensorFlow documentation](tensorflow.org/tutorials/load_data/tfrecord)
- - The above documentation will be useful to refer to as you work on the upcoming exercise.
+#### Additional Resources
+- [Using TFRecord and tf.train.Example from the TensorFlow documentation](tensorflow.org/tutorials/load_data/tfrecord)
+- The above documentation will be useful to refer to as you work on the upcoming exercise.
+
+#### 2021/01/17
+### Model Selection
+- Establishing **baselines** prior to building models will allow you to better assess your model's performances.
+  - ML Engineers get very excited about creating new models. However, before diving into this step of the ML workflow, one must set realistic expectations, by setting up baselines.
+- Baseline could be an **upper bound**
+  - How a human would perform at this task?
+  - An **upper bound baseline** gives you a sense of the maximum expected performance. If a client comes to you and asks for an algorithm that classifies images correctly 100% of the time, you can safely let them know that it won't happen. Human performance is a good upper bound baseline. For a classification problem, you should try to manually classify 100s of images to get an idea of what level of performance your algorithm could reach.
+- Baseline could be an **lower bound**
+  - If it were to randomly guess predictions, what would be the performance?
+  - A **lower bound baseline** gives you an idea of a minimum expected performance. If you are getting metrics below such baseline, a red flag should be raised and should be concerned that something is wrong with your training pipeline. For example, for a classification problem, the random guess baseline is a good lower bound. Given C classes, the accuracy of your accuracy of your algorithm should be higher than 1/C.
+
+- **Model selection is a dynamic part of the ML workflow**. It requires many iterations. Unless you have some prior knowledge of the task, it is recommended to start with simple models and iterate on complexity (For example, Random guess -> Linear/Logistic Regression -> Polynomial Regression -> Neural Networks). **Keep in mind that the validation set should remain the same during this phase!**
