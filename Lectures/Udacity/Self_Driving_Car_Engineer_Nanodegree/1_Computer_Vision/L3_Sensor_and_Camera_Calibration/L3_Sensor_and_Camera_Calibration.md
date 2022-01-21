@@ -98,3 +98,32 @@ Points in a distorted and undistorted (corrected) image. The point (x, y) is a s
 - The shape of the image, which is passed into the calibrateCamera function, is just the height and width of the image. One way to retrieve these values is by retrieving them from the grayscale image shape array gray.shape[::-1]. This returns the image width and height in pixel values like (1280, 960).
 - Another way to retrieve the image shape, is to get them directly from the color image by retrieving the first two values in the color image shape array using img.shape[1::-1]. This code snippet asks for just the first two values in the shape array, and reverses them. Note that in our case we are working with a greyscale image, so we only have 2 dimensions (color images have three, height, width, and depth), so this is not necessary.
 - It's important to use an entire grayscale image shape or the first two values of a color image shape. This is because the entire shape of a color image will include a third value -- the number of color channels -- in addition to the height and width of the image. For example the shape array of a color image might be (960, 1280, 3), which are the pixel height and width of an image (960, 1280) and a third value (3) that represents the three color channels in the color image which you'll learn more about later, and if you try to pass these three values into the calibrateCamera function, you'll get an error.
+
+#### 2021/01/21
+### Image Manipulation
+- Grayscale images are single channel images that only contain information about the intensity of the light.
+- Color models are mathematical models used to describe digital images. The **Red, Green, Blue (RGB)** color model describes images using three channels. Each pixel in this model is described by a triplet of values, usually 8-bit integers. This is the most common color model used in ML. **HLS/HSV** are also very popular color models. They take a different approach than the RGB model by encoding the color with a single value, the hue. The other two values characterize the darkness / colorfulness of the image.
+  
+#### Grayscale
+- Color spaces: mathematical model describing colors using tuples
+  - RGB
+  - HSV / HLS
+- **Grayscale** images: only carry information about the intensity of the light
+
+#### RGB
+- **RGB**: each pixel is a tuple of three values, most of the time 8 bits integer
+- A RGB image is made of three channels, one for each color of the model
+- We can use the channels to threshold the image based on colors
+- Limitations:
+  - Non linear color model
+  - Hard to determine specific colors
+
+#### HLS / HSV
+- **HLS**: Hue / Lightness / Saturation
+- **HSV**: Hue / Saturation / Value
+  - **Hue**: Color encoding, angle [0, 360]
+  - **Lightness / Value**: relative lightness or darkness of a color [0, 1]
+  - **Saturation**: measurement of colorfulness [0, 1]
+  - **Color thresholding** made **easier** because a single value encodes the color  
+  
+  ![HLS/HSV](../Reference/HLS,HSV.JPG)
