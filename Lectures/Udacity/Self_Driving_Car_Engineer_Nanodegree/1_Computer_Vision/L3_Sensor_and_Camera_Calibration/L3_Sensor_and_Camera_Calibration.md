@@ -127,3 +127,35 @@ Points in a distorted and undistorted (corrected) image. The point (x, y) is a s
   - **Color thresholding** made **easier** because a single value encodes the color  
   
   ![HLS/HSV](../Reference/HLS,HSV.JPG)
+
+
+#### 2022/01/24
+### Pixel Level Transformation
+- **Pillow** is a python imaging library. Using Pillow, we can easily load images, convert them from one color model to another and perform diverse pixel level transformation, such as color thresholding.
+- **Color thresholding** consists of isolating a range of color from a digital image. It can be done using different color models, but the HSV/HLS color models are particularly well suited for this task.
+
+### Image Enhancement and Filtering
+- Images in ML dataset reflect real life conditions and therefore may need to be improved upon or modified. Pillow provides a very useful module, **ImageEnhance**, to perform pixel level transformations on images, such as contrast changes. **Moreover, ML engineers often want to add some noise to the images in the dataset to reduce overfitting. ImageEnhance provides simple ways of doing so.**
+
+### Geometric Transformation
+- In addition to pixel level transformation, Pillow also provides ways to perform **geometric transformations**, such as rotation, resizing or translation. In particular, we can use Pillow to perform **affine transformation** (a geometric transformation where lines are preserved) using a transformation matrix.
+
+### Lesson Conclusion
+- In this lesson, we learned about:
+
+  - **The camera sensor and its distortion effect.** A camera captures light to a digital sensor but the raw images are distorted.
+  - **The camera pinhole model**: a simplified physical model of cameras.
+  - **Camera calibration** and how to use the Python library OpenCV to calibrate a camera using checkerboard images.
+  - **RGB and other color systems**. We discovered the RGB, HLS and HSV color systems and learned about the strength and weaknesses of each one.
+  - **Image manipulation in Python** and how to leverage Pillow to perform pixel-level and geometric transformations of digital images.
+
+### Glossary
+- **Aperture**: size of the opening where the light enters the camera. Controls the amount of light received by the sensor.
+- **Calibration**: process of estimating a camera's parameters.
+- **Focal length** / **field of view**: this parameter controls the angle of view of the image.
+- **Grayscale images**: single channel images that only contain information about the intensity of the light.
+- **HLS/HSV**: color model encoding the color with a single value, the hue. The other two values characterize the darkness / colorfulness of the image.
+- **Pinhole camera model**: simplified physical model of a camera.
+- **Resolution**: Number of pixels the image captured by the camera is made of (usually described in mega pixels).
+- **RGB**: color model using (red, green, blue) triplet to describe a pixel.
+- **Shutter speed**: duration that the sensor is exposed to the light.
