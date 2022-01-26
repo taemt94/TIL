@@ -25,3 +25,42 @@
 
 ## Linear Regression
 - A **linear regression** model is a type of ML algorithm that assumes a linear relation between the input variable and the output variable. Such a model is described by two parameters, the slope `m` and the intersection `b` such that `y = mx +b`. Fitting or training such a model requires to adjust `m` and `b` to minimize the chosen loss function.
+
+#### 2021/01/26
+## Linear Regression Loss Functions
+- The **Mean Squared Error (MSE)** loss or **L2** loss is the one of the most common function used with linear regression algorithm. It is calculated by summing the square difference of the ground truths and the predictions. Because of the nature of the square function, this loss is very sensitive to **outliers** (out of distributions data points). 
+- If your dataset contains many outliers, the **L1 (MAE)** loss (absolute difference between ground truth and predictions) may be a better candidate.
+
+## Logistic Regression
+- For classification problems, we can also use a linear expression to model the probability P(Y|X) of an input belonging to a certain category.
+- Such a model is called **logistic regression** and looks like this: `P(Y|X) = mx+b`. 
+- However, given that we want to model a probability, we need a way to constrain `mx+b` to the `[0, 1]` interval. 
+### Logistic Function (Sigmoid)
+- To do so, we are going to use the **logistic function (or sigmoid)**.  
+    $sigmoid = \sigma(x) = \frac{e^x}{1 + e^x}$
+- The logistic function maps any real number to the [0, 1] interval.
+- Logistic Regression:  
+  $f(X) = \frac{e^{mX+b}}{1 + e^{mX+b}}$
+### Softmax Function
+- **n classes**: X is a vector of n elements
+- **Generalization** of the sigmoid function to **multiple dimensions**
+- **Normarlize a vector X** into a **discrete probabilty distribution** (components add up to 1)
+- The **softmax function** is the extension of the logistic function to multiple classes and takes a vector as input instead of a real number. 
+- The softmax function outputs a discrete probability distribution: a vector of similar dimensions to the input but with all its components summing up to 1.  
+  $Softmax = \sigma(x)_i = \frac{e^{x_i}}{\sum_{j=0}^ne^{x_j}}$
+- Later in this lesson, we will describe the sigmoid and softmax functions as **activation functions**.
+
+### Cross-Entropy Loss and One-Hot Encoding
+- The **Cross Entropy (CE)** loss is the most common loss for classification problems. 
+- The total loss is equal to the sum over all the observations of the dot product of the ground truth one-hot encoded vector and the log of the softmax probability vector.  
+  $CE = L(y, \hat{y})=-\sum_{i=1}^ny_ilog(\hat{y_i})$
+
+- For multiple classes classification problems, the ground truth labels need to be encoded as vectors to calculate. 
+- A common approach is the **one-hot encoding** method, where each label of the dataset is assigned an integer. 
+- This integer is used as the index of the only non zero element of the one-hot vector.
+
+**Summary**: for classification problems, the labels need to be encoded to a vector of dimension `C`, where `C` is the number of classes in the dataset. Thanks to the **softmax function**, the model outputs a discrete probability distribution vector, also of dimension `C`. To calculate the **cross entropy loss** between the input and the output, we calculate the dot product of the **one hot vector** and the **log of the output**.
+
+## Introduction To Tensorflow
+- Tensorflow tensors are data structure sharing many attributes and properties with numpy arrays (such as .shape and broadcasting rules).
+- They do have additional attributes, allowing the user to move tensors from one device to another (cpu to gpu for example).
