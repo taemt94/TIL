@@ -101,3 +101,6 @@
 - Overcome hardware limitations but needs additional processing
 - Also called Stochastic Gradient descent (SGD)
   - Gradient descent performed on batches of **just one input at a time** is called **stochastic gradient descent (SGD)**, while **batches of more than one**, but not all at once (e.g. 20 batches of 200 images each), are called **mini-batch gradient descent**.
+=======
+- They do have additional attributes, allowing the user to move tensors from one device to another (cpu to gpu for example).
+>>>>>>> 5d9f0952402a5016b03df470f3998e44112647d9
