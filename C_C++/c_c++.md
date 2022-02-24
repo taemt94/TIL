@@ -295,3 +295,58 @@ fprintf(r_ptr, "b: %d\n", b);
 - `fopen`을 사용하여 파일을 생성할 때에는 "w" 옵션을 주면 된다.
 - FILE 형의 포인터를 선언한 후 `fprintf`를 사용하면, 위와 같이 "..." 내에 입력한 내용이 파일에 작성된다.
 - 같은 파일을 `fopen`을 통해 반복 작성할 경우 기존에 있던 내용에 새로운 내용이 덮어 씌여진다.
+
+#### 2022/02/24
+## 단어 입력 받아 출력하기
+``` c
+#include <stdio.h>
+
+int main(){
+    char data[51];
+    scanf("%s", data);  ## data 변수는 배열이므로 & 연산자를 붙이지 않아도 된다.
+    printf("%s", data);
+
+    return 0;
+}
+```
+
+## 공백 포함되어 있는 문장 입력 함수
+``` c
+#include <stdio.h>
+
+int main(){
+    char data[2001];
+    fgets(data, 2000, stdin);
+
+    return 0;
+}
+```
+
+## 문자열의 NULL
+``` c
+#include <stdio.h>
+
+int main(){
+    char word[20];
+    scanf("%s", word);
+    for(int i=0; word[i]!='\0'; i++){
+        printf("\'%c\'\n", word[i]);
+    }
+}
+```
+- 문자열을 입력으로 받게 되면 문자열의 마지막임을 나타내기 위해 문자열의 마지막에 NULL을 삽입한다.
+- NULL은 `\0`으로 표현할 수 있으므로 위와 같이 for 문을 통해 해당 문자가 문자열의 끝인지를 판단할 수 있다.
+
+## printf로 정수 출력하기
+``` c
+#include <stdio.h>
+
+int main(){
+    int y, m, d;
+    scanf("%d.%d.%d", &y, &m, &d);
+    printf("%02d-%02d-%04d", d, m, y);
+
+    return 0;
+}
+```
+- 2자리 정수를 4자리 칸에 출력하고, 앞 두자리는 0으로 채우고 싶은 경우 `%04d`와 같은 형식을 사용하면 된다.
