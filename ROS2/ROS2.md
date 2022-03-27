@@ -105,6 +105,7 @@ alias testsubimg='ros2 run image_tools showimage'
 ```
 
 ## 3.7 통합 개발환경(IDE) 설치
+### 3.7.1 Visual Studio Code
 - User settings 설정
   ``` bash
   $ vim ~/.config/Code/User/settings.json
@@ -192,3 +193,56 @@ alias testsubimg='ros2 run image_tools showimage'
   ``` bash
   $ vim ~/{Your Workspace}/.vscode/launch.json
   ```
+  ``` bash
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug-rclpy(debugpy)",
+        "type": "python",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug-rclcpp(gbd)",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/install/${input:package}/lib/${input:package}/${input:node}",
+        "args": [],
+        "preLaunchTask": "colcon: build",
+        "stopAtEntry": true,
+        "cwd": "${workspaceFolder}",
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "id": "package",
+        "type": "promptString",
+        "description": "package name",
+        "default": "topic_service_action_rclcpp_example"
+      },
+      {
+        "id": "node",
+        "type": "promptString",
+        "description": "node name",
+        "default": "argument"
+      }
+    ]
+  }
+  ```
+
+### 3.7.2 QtCreator
+``` bash
+$ sudo apt install qtcreator
+$ qtcreator
+```
