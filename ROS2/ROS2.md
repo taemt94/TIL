@@ -246,3 +246,137 @@ alias testsubimg='ros2 run image_tools showimage'
 $ sudo apt install qtcreator
 $ qtcreator
 ```
+
+#### 2022/03/28
+# 9. 패키지 설치와 노드 실행
+## 9.1. Turtlesim 패키지 설치
+``` bash
+$ sudo apt update
+$ sudo apt install ros-foxy-turtlesim
+```
+
+## 9.3. Turtlesim 패키지와 노드
+- 설치된 패키지 확인
+  ``` bash
+  $ ros2 pkg list
+  ```
+- 특정 패키지에 포함된 노드 확인
+  ``` bash
+  $ ros2 pkg executables <Package Name>
+  ```
+## 9.4. Turtlesim 패키지의 노드 실행
+- 패키지 노드 실행
+  ``` bash
+  $ ros2 run <Package Name> <Node Executable Name>
+  ```
+## 9.5. 노드, 토픽, 서비스, 액션의 조회
+- 실행 중인 노드 확인
+  ``` bash
+  $ ros2 node list
+  ```
+- Topic 확인
+  ``` bash
+  $ ros2 topic list
+  ```
+- Service 확인
+  ``` bash
+  $ ros2 service list
+  ```
+- Action 확인
+  ``` bash
+  $ ros2 action list
+  ```
+## 9.6. rqt_graph로 보는 노드와 토픽의 그래프 뷰
+- rqt_graph 실행
+  ``` bash
+  $ rqt_graph
+  ```
+
+# 10. ROS2 노드와 데이터 통신
+## 10.2. 노드 실행(ros2 run)
+- 노드 실행
+  ``` bash
+  $ ros2 run <Package Name> <Node Executable Name>
+  ```
+## 10.3. 노드 목록(ros2 node list)
+- 실행 중인 노드 확인
+  ``` bash
+  $ ros2 node list
+  ```
+- 노드명 변경하여 노드 실행
+  ``` bash
+  $ ros2 run <Package Name> <Node Executable Name> __node:=<New Node Name>
+
+## 10.4. 노드 정보(ros2 node info)
+- 실행 중인 노드 정보 확인
+  $\rightarrow$ 노드의 topic publisher, subscriber, service, action, parameter 등의 정보 확인 가능
+  ``` bash
+  $ ros2 node info <Node Name>
+  ```
+
+# 11. ROS2 토픽
+## 11.2. 토픽 목록 확인(ros2 topic list)
+- 현재 개발 환경에서 동작 중인 모든 노드들의 토픽 정보 확인
+  ``` bash
+  $ ros2 topic list -t # -t : 각 메시지의 형태(Type)까지 표시
+  ```
+- `rqt_graph`에서 `Dead sinks` 및 `Leaf topics` 체크 해제하면 노드 상관없이 모든 토픽 확인 가능
+
+## 11.3. 토픽 정보 확인(ros2 topic info)
+- CLI 토픽 정보 확인 명령어
+  ``` bash
+  $ ros2 topic info <Topic Name>
+  ```
+
+## 11.4. 토픽 내용 확인(ros2 topic echo)
+- 특정 토픽의 메시지 내용을 실시간으로 표시
+  ``` bash
+  $ ros2 topic echo <Topic Name>
+  ```
+
+## 11.5. 토픽 대역폭 확인(ros2 topic bw)
+- 메시지 대역폭(메시지 크기) 확인
+  ``` bash
+  $ ros2 topic bw <Topic Name>
+  ```
+
+## 11.6. 토픽 주기 확인(ros2 topic hz)
+- 토픽의 전송 주기 확인
+  ``` bash
+  $ ros2 topic hz <Topic Name>
+  ```
+
+## 11.7. 토픽 지연시간 확인(ros2 topic delay)
+- 토픽 지연시간(latency) 확인  
+  $\rightarrow$ 메시지 내에 header stamp 메시지를 사용하고 있어야 확인 가능
+  ``` bash
+  $ ros2 topic delay <Topic Name>
+  ```
+
+## 11.8. 토픽 퍼블리시(ros2 topic pub)
+- 간단히 하나의 토픽 퍼블리시할 때 사용
+  ``` bash
+  $ ros2 topic pub <Topic Name> <Message Type> <Message>
+  ## Example
+  $ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}" # --once 옵션: 한 번만 퍼블리시
+  $ ros2 topic pub --rate 1 /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}" # --rate 옵션: 뒤에 쓴 주기로 퍼블리시
+  ```
+
+## 11.9. bag 기록(ros2 bag record)
+- 퍼블리시되는 토픽을 파일 형태로 저장
+  ``` bash
+  $ ros2 bag record -o <Directory> <Topic Name 1> <Topic Name 2> ... # -o 옵션: rosbag 저장 폴더 명 설정
+  ```
+
+## 11.10. bag 정보(ros2 bag info)
+- 저장된 rosbag 파일 정보 확인
+  ``` bash
+  $ ros2 bag info <rosbag Name>
+  ```
+
+## 11.11. bag 재생(ros2 bag play)
+- 저장된 rosbag 파일을 재생하여 저장한 토픽 확인
+  ``` bash
+  $ ros2 bag play <rosbag Name>
+  $ ros2 topic echo <Topic Name> # bag play 한 후 echo 통해 토픽 확인 가능
+  ```
