@@ -380,3 +380,225 @@ $ sudo apt install ros-foxy-turtlesim
   $ ros2 bag play <rosbag Name>
   $ ros2 topic echo <Topic Name> # bag play 한 후 echo 통해 토픽 확인 가능
   ```
+
+#### 2022/03/31
+# 23. ROS2의 빌드 시스템과 빌드 툴
+## 23.4. 패키지 생성
+- 패키지 생성 명령어
+  ``` bash
+  $ ros2 pkg create <Package Name> --build-type <Build Type> --dependecies <Dependant Package 1> ... <Dependant Package n>
+
+  ## Example
+  $ cd ~/ROS2_ws/src
+  $ ros2 pkg create my_first_ros_rclcpp_pkg --build-type ament_cmake --dependencies rclcpp std_msgs
+  $ ros2 pkg create my_first_ros_rclpy_pkg --build-type ament_python --dependencies rclpy std_msgs
+  ```
+
+## 23.5. 패키지 빌드
+- colcon 빌드 툴을 사용한 ROS2 패키지 빌드
+  ``` bash
+  $ cd ~/ROS2_ws
+  $ colcon build --symlink-install ## 전체 패키지 모두 빌드
+  $ colcon build --symlink-install --packages-select <Package Name> ## 특정 패키지만 빌드
+  $ colcon build --symlink-install --packages-up-to <Package Name> ## 특정 패키지 및 해당 패키지의 의존성 패키지까지 함께 빌드
+  ```
+
+## 23.6. 빌드 시스템에 필요한 부가 기능
+### 23.6.2. rosdep(의존성 관리 툴)
+- package.xml에 기술된 의존성 정보를 가지고 의존성 패키지들을 설치해주는 툴
+  ``` bash
+  $ sudo rosdep init
+  $ rosdep update
+  $ rosdep install --from-paths src --ignore-src --rosdistro foxy -y --skip-keys "console_bridge fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers"
+  ```
+
+# 2부
+# 2. ROS 프로그래밍 기초(파이썬)
+## 2.3. 패키지 설정
+### 2.3.1. 패키지 설정 파일(package.xml)
+
+``` xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_first_ros_rclpy_pkg</name>
+  <version>0.0.2</version>
+  <description>ROS 2 rclpy basic package for the ROS 2 seminar</description>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <license>Apache License 2.0</license>
+  <author email="mikael@osrfoundation.org">Mikael Arguedas</author>
+  <author email="pyo@robotis.com">Pyo</author>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type> ## C++ : ament_cmake, python : ament_python
+  </export>
+</package>
+```
+
+### 2.3.2. 파이썬 패키지 설정 파일(setup.py)
+- `entry_points` 옵션의 `console_scripts` 키를 사용한 실행 파일 설정 필요
+- 예를 들어 `helloworld_publisher`과 `helloworld_subscriber` 콘솔 스크립트는 각각 my_first_ros_rclpy_pkg.helloworld_publisher 모듈과 my_first_ros_rclpy_pkg.helloworld_subscriber 모듈의 main 함수를 호출 $\rightarrow$ `ros2 run` 또는 `ros2 launch`를 이용하여 해당 스크립트 실행 가능
+``` python
+from setuptools import find_packages
+from setuptools import setup
+
+package_name = 'my_first_ros_rclpy_pkg'
+
+setup(
+    name=package_name,
+    version='0.0.2',
+    packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    author='Mikael Arguedas, Pyo',
+    author_email='mikael@osrfoundation.org, pyo@robotis.com',
+    maintainer='Pyo',
+    maintainer_email='pyo@robotis.com',
+    keywords=['ROS'],
+    classifiers=[
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python',
+        'Topic :: Software Development',
+    ],
+    description='ROS 2 rclpy basic package for the ROS 2 seminar',
+    license='Apache License, Version 2.0',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'helloworld_publisher = my_first_ros_rclpy_pkg.helloworld_publisher:main',
+            'helloworld_subscriber = my_first_ros_rclpy_pkg.helloworld_subscriber:main',
+        ],
+    },
+)
+```
+
+### 2.3.3. 파이썬 패키지 환경설정 파일(setup.cfg)
+- colcon 빌드 시 `/home/[유저이름]/robot_ws/install/my_first_ros_rclpy_pkg/lib/my_first_ros_rclpy_pkg`와 같은 지정 폴더에 실행 파일이 생성됨
+``` 
+[develop]
+script-dir=$base/lib/my_first_ros_rclpy_pkg
+[install]
+install-scripts=$base/lib/my_first_ros_rclpy_pkg
+```
+
+
+## 2.4. 퍼블리셔 노드 작성
+
+``` python
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import QoSProfile
+from std_msgs.msg import String
+
+
+class HelloworldPublisher(Node):
+
+    def __init__(self):
+        super().__init__('helloworld_publisher')
+        qos_profile = QoSProfile(depth=10) ## depth : 전송 문제 발생 시 퍼블리시할 데이터를 버퍼에 10개까지 저장
+        
+        ## 퍼블리셔 생성
+        ## 토픽 메시지 타입 : String, 토픽 이름 : helloworld, QoS : qos_profile
+        self.helloworld_publisher = self.create_publisher(String, 'helloworld', qos_profile)
+        
+        ## create_timer 함수를 이용한 콜백 함수(publish_helloworld_msg) 실행
+        ## timer_period_sec(1)의 시간마다 지정한 콜백 함수를 싱행
+        self.timer = self.create_timer(1, self.publish_helloworld_msg)
+        self.count = 0
+
+    def publish_helloworld_msg(self):
+        msg = String()
+        msg.data = 'Hello World: {0}'.format(self.count) ## msg.data에 실제 데이터 저장
+        self.helloworld_publisher.publish(msg) ## 토픽 퍼블리시
+        self.get_logger().info('Published message: {0}'.format(msg.data)) ## 터미널 창에 출력해주는 함수
+        self.count += 1
+
+
+def main(args=None):
+    rclpy.init(args=args) ## 초기화
+    node = HelloworldPublisher()
+    try:
+        rclpy.spin(node) ## 생성한 노드를 spin시켜 지정된 콜백 함수가 실행될 수 있도록 함
+    except KeyboardInterrupt:
+        node.get_logger().info('Keyboard Interrupt (SIGINT)')
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+## 2.5. 서브스크라이버 노드 작성
+``` python
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import QoSProfile
+from std_msgs.msg import String
+
+
+class HelloworldSubscriber(Node):
+
+    def __init__(self):
+        super().__init__('Helloworld_subscriber')
+        qos_profile = QoSProfile(depth=10)
+        
+        ## 서브스크라이버 생성
+        ## 토픽 메시지 타입 : String, 토픽 이름 : helloworld, 콜백 함수 : subscribe_topic_message, QoS : qos_profile        
+        self.helloworld_subscriber = self.create_subscription(
+            String,
+            'helloworld',
+            self.subscribe_topic_message,
+            qos_profile)
+
+    ## 서브스크라이브한 메시지를 출력해주는 콜백 함수
+    def subscribe_topic_message(self, msg):
+        self.get_logger().info('Received message: {0}'.format(msg.data))
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = HelloworldSubscriber()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.get_logger().info('Keyboard Interrupt (SIGINT)')
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+## 2.6. 빌드
+- colcon 빌드 툴을 사용한 ROS2 패키지 빌드
+  ``` bash
+  $ cd ~/ROS2_ws
+  $ colcon build --symlink-install ## 전체 패키지 모두 빌드
+  $ colcon build --symlink-install --packages-select <Package Name> ## 특정 패키지만 빌드
+  $ colcon build --symlink-install --packages-up-to <Package Name> ## 특정 패키지 및 해당 패키지의 의존성 패키지까지 함께 빌드
+
+  ## Example
+  $ colcon build --symlink-install --packages-select my_first_ros_rclpy_pkg
+  ```
+- 특정 패키지 첫 빌드 후 환경설정 파일을 불러와 실행 가능한 패키지의 노드 설정을 해줘야 빌드된 노드 실행 가능
+  ``` bash
+  $ . ~/ROS2_ws/install/local_setup.bash
+  ```
