@@ -445,7 +445,7 @@ $ sudo apt install ros-foxy-turtlesim
 
 ### 2.3.2. 파이썬 패키지 설정 파일(setup.py)
 - `entry_points` 옵션의 `console_scripts` 키를 사용한 실행 파일 설정 필요
-- 예를 들어 `helloworld_publisher`과 `helloworld_subscriber` 콘솔 스크립트는 각각 my_first_ros_rclpy_pkg.helloworld_publisher 모듈과 my_first_ros_rclpy_pkg.helloworld_subscriber 모듈의 main 함수를 호출 ${\rightarrow}$ `ros2 run` 또는 `ros2 launch`를 이용하여 해당 스크립트 실행 가능
+- 예를 들어 `helloworld_publisher`과 `helloworld_subscriber` 콘솔 스크립트는 각각 my_first_ros_rclpy_pkg.helloworld_publisher 모듈과 my_first_ros_rclpy_pkg.helloworld_subscriber 모듈의 main 함수를 호출 $\rightarrow$ `ros2 run` 또는 `ros2 launch`를 이용하여 해당 스크립트 실행 가능
 ``` python
 from setuptools import find_packages
 from setuptools import setup
