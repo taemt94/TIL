@@ -390,8 +390,8 @@ $ sudo apt install ros-foxy-turtlesim
 
   ## Example
   $ cd ~/ROS2_ws/src
-  $ ros2 pkg create my_first_ros_rclcpp_pkg --build-type ament_cmake --dependencies rclcpp std_msgs
-  $ ros2 pkg create my_first_ros_rclpy_pkg --build-type ament_python --dependencies rclpy std_msgs
+  $ ros2 pkg create my_first_ros_rclcpp_pkg --build-type ament_cmake --dependencies rclcpp std_msgs ## C++
+  $ ros2 pkg create my_first_ros_rclpy_pkg --build-type ament_python --dependencies rclpy std_msgs ## Python
   ```
 
 ## 23.5. 패키지 빌드
@@ -601,4 +601,189 @@ if __name__ == '__main__':
 - 특정 패키지 첫 빌드 후 환경설정 파일을 불러와 실행 가능한 패키지의 노드 설정을 해줘야 빌드된 노드 실행 가능
   ``` bash
   $ . ~/ROS2_ws/install/local_setup.bash
+  ```
+
+#### 2022/04/09
+# 3. ROS 프로그래밍 기초(C++)
+## 3.2. 패키지 생성
+```
+$ cd ~/robot_ws/src/
+$ ros2 pkg create my_first_ros_rclcpp_pkg --build-type ament_cmake --dependencies rclcpp std_msgs
+```
+
+## 3.3. 패키지 설정
+### 3.3.1. 패키지 설정 파일(package.xml)
+- C++ => build_type: ament_cmake
+``` xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_first_ros_rclcpp_pkg</name>
+  <version>0.0.1</version>
+  <description>ROS 2 rclcpp basic package for the ROS 2 seminar</description>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <license>Apache License 2.0</license>
+  <author>Mikael Arguedas</author>
+  <author>Morgan Quigley</author>
+  <author email="jacob@openrobotics.org">Jacob Perron</author>
+  <author email="pyo@robotis.com">Pyo</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+```
+
+### 3.3.2. 빌드 설정 파일(CMakeLists.txt)
+``` cmake
+# Set minimum required version of cmake, project name and compile options
+cmake_minimum_required(VERSION 3.5)
+project(my_first_ros_rclcpp_pkg)
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
+# Build
+add_executable(helloworld_publisher src/helloworld_publisher.cpp)
+ament_target_dependencies(helloworld_publisher rclcpp std_msgs)
+
+add_executable(helloworld_subscriber src/helloworld_subscriber.cpp)
+ament_target_dependencies(helloworld_subscriber rclcpp std_msgs)
+
+# Install
+install(TARGETS
+  helloworld_publisher
+  helloworld_subscriber
+  DESTINATION lib/${PROJECT_NAME})
+
+# Test
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+# Macro for ament package
+ament_package()
+```
+
+## 3.4. 퍼블리셔 노드 작성
+``` cpp
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+
+class HelloworldPublisher : public rclcpp::Node
+{
+public:
+  HelloworldPublisher()
+  : Node("helloworld_publisher"), count_(0)
+  {
+    auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(10));
+    helloworld_publisher_ = this->create_publisher<std_msgs::msg::String>(
+      "helloworld", qos_profile);
+    timer_ = this->create_wall_timer(
+      1s, std::bind(&HelloworldPublisher::publish_helloworld_msg, this));
+  }
+
+private:
+  void publish_helloworld_msg()
+  {
+    auto msg = std_msgs::msg::String();
+    msg.data = "Hello World: " + std::to_string(count_++);
+    RCLCPP_INFO(this->get_logger(), "Published message: '%s'", msg.data.c_str());
+    helloworld_publisher_->publish(msg);
+  }
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr helloworld_publisher_;
+  size_t count_;
+};
+
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared<HelloworldPublisher>();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}
+```
+
+## 3.5. 서브스크라이버 노드 작성
+``` cpp
+#include <functional>
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using std::placeholders::_1;
+
+
+class HelloworldSubscriber : public rclcpp::Node
+{
+public:
+  HelloworldSubscriber()
+  : Node("Helloworld_subscriber")
+  {
+    auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(10));
+    helloworld_subscriber_ = this->create_subscription<std_msgs::msg::String>(
+      "helloworld",
+      qos_profile,
+      std::bind(&HelloworldSubscriber::subscribe_topic_message, this, _1));
+  }
+
+private:
+  void subscribe_topic_message(const std_msgs::msg::String::SharedPtr msg) const
+  {
+    RCLCPP_INFO(this->get_logger(), "Received message: '%s'", msg->data.c_str());
+  }
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr helloworld_subscriber_;
+};
+
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared<HelloworldSubscriber>();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}
+```
+
+## 3.6. 빌드
+- my_first_ros_rclcpp_pkg 패키지만 빌드
+  ``` bash
+  $ cd ~/robot_ws
+  $ colcon build --symlink-install --packages-select my_first_ros_rclcpp_pkg
+  ```
+- 빌드 시 `ModuleNotFoundError: No module named 'catkin_pkg'` 에러가 발생하였는데, 이 때 필요한 패키지 설치 후 제대로 빌드되는 것을 확인하였다.
+  ``` bash
+  pip install catkin_pkg
   ```
