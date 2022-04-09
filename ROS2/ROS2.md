@@ -787,3 +787,9 @@ int main(int argc, char * argv[])
   ``` bash
   pip install catkin_pkg
   ```
+- 특정 패키지의 첫 빌드 후에는 아래와 같이 환경설정 파일을 불러와서 실행 가능한 패키지의 노드 설정을 해야 빌드된 노드 실행 가능
+  ``` bash
+  $ source ~/robot_ws/install/local_setup.bash
+  또는
+  $ . ~/robot_ws/install/local_setup.bash
+  ```
